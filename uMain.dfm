@@ -25,7 +25,7 @@ object frmMain: TfrmMain
     Caption = 'pnlButtons'
     ShowCaption = False
     TabOrder = 0
-    ExplicitLeft = -5
+    ExplicitHeight = 761
     object btnSettings: TButton
       Left = 24
       Top = 24

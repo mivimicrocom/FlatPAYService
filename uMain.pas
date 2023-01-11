@@ -253,19 +253,22 @@ var
   Filename: string;
   lToFile: string;
 begin
-  Filenames := TDirectory.GetFiles(FOutgoingResultFolder, '*.txt', TSearchOption.soAllDirectories);
-  for Filename in Filenames do
+  if (FOutgoingResultFolder <> '') then
   begin
-    lToFile := (FLogFolderOutgoingResult + TPath.GetFileNameWithoutExtension(Filename)) + FormatDateTime('yyyymmdd_hhmmssmss', NOW) + '.txt';
-    if (NOT(MoveFile(PWideChar(Filename), PWideChar(lToFile)))) then
-      AddLog('Kan ikke flytte fil ' + Filename + ' til ' + lToFile);
-  end;
-  Filenames := TDirectory.GetFiles(FOutgoingResultFolder, '*.json', TSearchOption.soAllDirectories);
-  for Filename in Filenames do
-  begin
-    lToFile := (FLogFolderOutgoingResult + TPath.GetFileNameWithoutExtension(Filename)) + FormatDateTime('yyyymmdd_hhmmssmss', NOW) + '.json';
-    if (NOT(MoveFile(PWideChar(Filename), PWideChar(lToFile)))) then
-      AddLog('Kan ikke flytte fil ' + Filename + ' til ' + lToFile);
+    Filenames := TDirectory.GetFiles(FOutgoingResultFolder, '*.txt', TSearchOption.soAllDirectories);
+    for Filename in Filenames do
+    begin
+      lToFile := (FLogFolderOutgoingResult + TPath.GetFileNameWithoutExtension(Filename)) + FormatDateTime('yyyymmdd_hhmmssmss', NOW) + '.txt';
+      if (NOT(MoveFile(PWideChar(Filename), PWideChar(lToFile)))) then
+        AddLog('Kan ikke flytte fil ' + Filename + ' til ' + lToFile);
+    end;
+    Filenames := TDirectory.GetFiles(FOutgoingResultFolder, '*.json', TSearchOption.soAllDirectories);
+    for Filename in Filenames do
+    begin
+      lToFile := (FLogFolderOutgoingResult + TPath.GetFileNameWithoutExtension(Filename)) + FormatDateTime('yyyymmdd_hhmmssmss', NOW) + '.json';
+      if (NOT(MoveFile(PWideChar(Filename), PWideChar(lToFile)))) then
+        AddLog('Kan ikke flytte fil ' + Filename + ' til ' + lToFile);
+    end;
   end;
 end;
 
