@@ -672,6 +672,7 @@ procedure TFlatPAY.SetupXReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHt
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
   aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=XReport', [aFlatSetup.XReportApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
+//  aFlatPAYHttp.Request.Timeout := 5000;
 end;
 
 procedure TFlatPAY.SetupZReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
