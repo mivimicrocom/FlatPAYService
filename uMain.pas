@@ -63,8 +63,16 @@ type
     FLanguage: string;
     FDisablePrint: Boolean;
     Futi: string;
+    FXReportName: String;
+    FZReportName: string;
+    FHistoryName: string;
+    FLastTransactionName: string;
+    FResultOK: string;
+    FResultError: string;
     { private declarations }
   public
+    constructor Create;
+    destructor Destroy; override;
     { public declarations }
     [MVCNameAs('KindOfJob')]
     property KindOfJob: string read FKindOfJob write FKindOfJob;
@@ -84,6 +92,18 @@ type
     property DisablePrint: Boolean read FDisablePrint write FDisablePrint;
     [MVCNameAs('uti')]
     property uti: string read Futi write Futi;
+    [MVCDoNotSerialize]
+    property XReportName: String read FXReportName;
+    [MVCDoNotSerialize]
+    property ZReportName: string read FZReportName;
+    [MVCDoNotSerialize]
+    property HistoryName: string read FHistoryName;
+    [MVCDoNotSerialize]
+    property LastTransactionName: string read FLastTransactionName;
+    [MVCDoNotSerialize]
+    property ResultOK: string read FResultOK;
+    [MVCDoNotSerialize]
+    property ResultError: string read FResultError;
   end;
   // {
   // "KindOfJob": "X-Report",
@@ -122,6 +142,9 @@ type
     procedure ShowSettings;
     procedure PairWithTerminal;
     procedure XReport(aTest: Boolean);
+    procedure ZReport(aTest: Boolean);
+    procedure HistoryReport(aTest: Boolean);
+    procedure GetLastTransaction(aTest: Boolean; auti: string);
     procedure CleanResultFolder;
     procedure DoWritetReturnResponse(aFileName: string; aContent: string);
     procedure AddLog(aText: String);
@@ -349,10 +372,25 @@ begin
         // Deserialize job
         GetDefaultSerializer.DeserializeObject(lMyFileStr, FlatPAYAction);
 
-        if (AnsiUpperCase(FlatPAYAction.FKindOfJob) = AnsiUpperCase('X-Report')) then
+        if (AnsiUpperCase(FlatPAYAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.XReportName)) then
         begin
-          AddLog('JOB: X-Report');
+          AddLog(Format('JOB: %s',[FlatPAYAction.XReportName]));
           XReport(FALSE);
+        end
+        else if (AnsiUpperCase(FlatPAYAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.ZReportName)) then
+        begin
+          AddLog(Format('JOB: %s',[FlatPAYAction.ZReportName]));
+          ZReport(FALSE);
+        end
+        else if (AnsiUpperCase(FlatPAYAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.HistoryName)) then
+        begin
+          AddLog(Format('JOB: %s',[FlatPAYAction.HistoryName]));
+          HistoryReport(FALSE);
+        end
+        else if (AnsiUpperCase(FlatPAYAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.LastTransactionName)) then
+        begin
+          AddLog(Format('JOB: %s',[FlatPAYAction.LastTransactionName]));
+          GetLastTransaction(FALSE, FlatPAYAction.uti);
         end;
 
       finally
@@ -523,8 +561,8 @@ begin
       if (not(aTest)) then
       begin
         lXreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_XReportResponse));
-        DoWritetReturnResponse('x-report.json', lXreportJSONOutput);
-        DoWritetReturnResponse('Result.txt', 'X-Report OK');
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.XReportName]), lXreportJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.XReportName, FlatPAYAction.ResultOK]));
       end;
     end
     else
@@ -534,8 +572,8 @@ begin
       if (not(aTest)) then
       begin
         lXreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
-        DoWritetReturnResponse('x-report.json', lXreportJSONOutput);
-        DoWritetReturnResponse('Result.txt', 'X-Report Error');
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.XReportName]), lXreportJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.XReportName, FlatPAYAction.ResultError]));
       end;
     end;
     AddLog(' ');
@@ -543,6 +581,178 @@ begin
   finally
     FreeAndNil(lFlatPAY);
   end;
+end;
+
+procedure TMyFlatPAYCommunication.ZReport(aTest: Boolean);
+var
+  lFlatPAY: TFlatPAY;
+  lResponse: TFlatPAY_Response;
+  lZreportJSONOutput: string;
+begin
+  CleanResultFolder;
+  AddLog('X-Rapport');
+  AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
+  AddLog('  Endpoint: ' + FlatPAYSetup.XReportApi);
+
+  lFlatPAY := TFlatPAY.Create;
+  try
+    FlatPAYSetup.DisablePrint := FDisablePrint;
+    if (lFlatPAY.GetZReport(FlatPAYSetup, lResponse)) then
+    begin
+      AddLog('  reportType: ' + (lResponse as TFlatPAY_ZReportResponse).reportType);
+      AddLog('  reportResponse: ' + (lResponse as TFlatPAY_ZReportResponse).reportResponse.ToString(TUseBoolStrs.true));
+      AddLog('  saleCount: ' + (lResponse as TFlatPAY_ZReportResponse).saleCount.ToString);
+      AddLog('  refundCound: ' + (lResponse as TFlatPAY_ZReportResponse).refundCount.ToString);
+      AddLog('  completionCount: ' + (lResponse as TFlatPAY_ZReportResponse).completionCount.ToString);
+      AddLog('  cashbackCount: ' + (lResponse as TFlatPAY_ZReportResponse).cashbackCount.ToString);
+      AddLog('  gratuityCount: ' + (lResponse as TFlatPAY_ZReportResponse).gratuityCount.ToString);
+      AddLog('  saleAmount: ' + (lResponse as TFlatPAY_ZReportResponse).saleAmount.ToString);
+      AddLog('  refundAmount: ' + (lResponse as TFlatPAY_ZReportResponse).refundAmount.ToString);
+      AddLog('  completionAmount: ' + (lResponse as TFlatPAY_ZReportResponse).completionAmount.ToString);
+      AddLog('  cashbackAmount: ' + (lResponse as TFlatPAY_ZReportResponse).cashbackAmount.ToString);
+      AddLog('  gratuityAmount: ' + (lResponse as TFlatPAY_ZReportResponse).gratuityAmount.ToString);
+
+      if (not(aTest)) then
+      begin
+        lZreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ZReportResponse));
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.ZReportName]), lZreportJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.ZReportName, FlatPAYAction.ResultOK]));
+      end;
+    end
+    else
+    begin
+      AddLog('  Code: ' + intToStr((lResponse as TFlatPAY_ErrorResponse).StatusCode));
+      AddLog('  Message: ' + #13#10 + (lResponse as TFlatPAY_ErrorResponse).StatusText);
+      if (not(aTest)) then
+      begin
+        lZreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.ZReportName]), lZreportJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.ZReportName, FlatPAYAction.ResultError]));
+      end;
+    end;
+    AddLog(' ');
+    FreeAndNil(lResponse);
+  finally
+    FreeAndNil(lFlatPAY);
+  end;
+end;
+
+procedure TMyFlatPAYCommunication.HistoryReport(aTest: Boolean);
+var
+  lFlatPAY: TFlatPAY;
+  lResponse: TFlatPAY_Response;
+  lHistoryreportJSONOutput: string;
+begin
+
+  //Succesful call must return correct json.
+
+  CleanResultFolder;
+  AddLog('History-Rapport');
+  AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
+  AddLog('  Endpoint: ' + FlatPAYSetup.HistoryReportsApi);
+
+  lFlatPAY := TFlatPAY.Create;
+  try
+    FlatPAYSetup.DisablePrint := FDisablePrint;
+    if (lFlatPAY.GetHistoryReport(FlatPAYSetup, lResponse)) then
+    begin
+      AddLog('  Code: ' + intToStr((lResponse as TFlatPAY_ErrorResponse).StatusCode));
+      AddLog('  Message: ' + #13#10 + (lResponse as TFlatPAY_ErrorResponse).StatusText);
+
+      if (not(aTest)) then
+      begin
+        lHistoryreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ZReportResponse));
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.HistoryName]), lHistoryreportJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.HistoryName, FlatPAYAction.ResultOK]));
+      end;
+    end
+    else
+    begin
+      AddLog('  Code: ' + intToStr((lResponse as TFlatPAY_ErrorResponse).StatusCode));
+      AddLog('  Message: ' + #13#10 + (lResponse as TFlatPAY_ErrorResponse).StatusText);
+      if (not(aTest)) then
+      begin
+        lHistoryreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.HistoryName]), lHistoryreportJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.HistoryName, FlatPAYAction.ResultError]));
+      end;
+    end;
+    AddLog(' ');
+    FreeAndNil(lResponse);
+  finally
+    FreeAndNil(lFlatPAY);
+  end;
+end;
+
+procedure TMyFlatPAYCommunication.GetLastTransaction(aTest: Boolean; auti: string);
+var
+  lFlatPAY: TFlatPAY;
+  lResponse: TFlatPAY_Response;
+  lStr: string;
+  lTransApproved: Boolean;
+  lTransCancelled: Boolean;
+  luti: string;
+  ii: Integer;
+  lLastTransactionJSONOutput: string;
+begin
+  CleanResultFolder;
+  AddLog('Get (last) transaction');
+  AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
+  AddLog('  Endpoint: ' + FlatPAYSetup.GetTransactionApi);
+
+  lFlatPAY := TFlatPAY.Create;
+  try
+    FlatPAYSetup.uti := auti;
+    if (lFlatPAY.GetHistoryReport(FlatPAYSetup, lResponse)) then
+    begin
+      lStr := (lResponse as TFlatPAY_GetTransactionsRespons).cardType;
+      lTransApproved := (lResponse as TFlatPAY_GetTransactionsRespons).TransApproved;
+      lTransCancelled := (lResponse as TFlatPAY_GetTransactionsRespons).TransCancelled;
+      luti := (lResponse as TFlatPAY_GetTransactionsRespons).uti;
+      for ii := 0 to length((lResponse as TFlatPAY_GetTransactionsRespons).cardholderReceipt) - 1 do
+        AddLog((lResponse as TFlatPAY_GetTransactionsRespons).cardholderReceipt[ii]);
+
+      if (not(aTest)) then
+      begin
+        lLastTransactionJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_GetTransactionsRespons));
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.LastTransactionName]), lLastTransactionJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.LastTransactionName, FlatPAYAction.ResultOK]));
+      end;
+    end
+    else
+    begin
+      AddLog('  Code: ' + intToStr((lResponse as TFlatPAY_ErrorResponse).StatusCode));
+      AddLog('  Message: ' + #13#10 + (lResponse as TFlatPAY_ErrorResponse).StatusText);
+      if (not(aTest)) then
+      begin
+        lLastTransactionJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
+        DoWritetReturnResponse(Format('%s.json',[FlatPAYAction.LastTransactionName]), lLastTransactionJSONOutput);
+        DoWritetReturnResponse('Result.txt', Format('%s %s',[FlatPAYAction.LastTransactionName, FlatPAYAction.ResultError]));
+      end;
+    end;
+    AddLog(' ');
+    FreeAndNil(lResponse);
+  finally
+    FreeAndNil(lFlatPAY);
+  end;
+end;
+
+{ TFlatPAYAction }
+
+constructor TFlatPAYAction.Create;
+begin
+  FXReportName := 'x-report';
+  FZReportName := 'z-report';
+  FHistoryName := 'history';
+  FLastTransactionName := 'last-transaction';
+  FResultOK := 'OK';
+  FResultError := 'ERROR';
+end;
+
+destructor TFlatPAYAction.Destroy;
+begin
+
+  inherited;
 end;
 
 end.
