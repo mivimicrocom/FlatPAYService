@@ -99,6 +99,41 @@ type
   TFlatPAY_Response = class
   end;
 
+  TFlatPAY_History = class
+  private
+    FcardPan: string;
+    FreceieptNumber: Integer;
+    FretrievalReferenceNumber: string;
+    FtotalAmountTrans: Double;
+    FtransApproved: string;
+    FtransDateTime: string;
+    FtransType: string;
+  public
+    [MVCNameAs('cardPan')]
+    property cardPan: string read FcardPan write FcardPan;
+    [MVCNameAs('receiptNumber')]
+    property receieptNumber: Integer read FreceieptNumber write FreceieptNumber;
+    [MVCNameAs('retrievalReferenceNumber')]
+    property retrievalReferenceNumber: string read FretrievalReferenceNumber write FretrievalReferenceNumber;
+    [MVCNameAs('totalAmountTrans')]
+    property totalAmountTrans: Double read FtotalAmountTrans write FtotalAmountTrans;
+    [MVCNameAs('transApproved')]
+    property transApproved: string read FtransApproved write FtransApproved;
+    [MVCNameAs('transDateTime')]
+    property transDateTime: string read FtransDateTime write FtransDateTime;
+    [MVCNameAs('transType')]
+    property transType: string read FtransType write FtransType;
+  end;
+
+  TFlatPAY_HistoryResponse = class(TFlatPAY_Response)
+  private
+    FHistory: TObjectList<TFlatPAY_History>;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    property History: TObjectList<TFlatPAY_History> read FHistory write FHistory;
+  end;
+
   // Responsetype when doing a pair where serialnumber and a token will be returned
   TFlatPAY_TokenResponse = class(TFlatPAY_Response)
   private
@@ -211,9 +246,7 @@ type
     FStatusCode: integer;
     FStatusText: string;
   public
-    [MVCNameAs('StatusCode')]
     property StatusCode: integer read FStatusCode write FStatusCode;
-    [MVCNameAs('StatusText')]
     property StatusText: string read FStatusText write FStatusText;
   end;
 
@@ -364,7 +397,7 @@ type
     FtransType: string;
     FemvCryptogram: string;
     Futi: string;
-  published
+  public
     [MVCNameAs('amountCashback')]
     property amountCashback: integer read FamountCashback write FamountCashback;
     [MVCNameAs('amountDiscount')]
@@ -446,7 +479,7 @@ type
   private
     FValue: integer;
     FDescription: string;
-  published
+  public
     property value: integer read FValue write FValue;
     property description: string read FDescription write FDescription;
   end;
@@ -472,7 +505,7 @@ type
     FPort: string;
     FBaseUrl: string;
     FPairApi: string;
-    FXReportApi: string;
+    FReportsApi: string;
     FHistoryReportsApi: string;
     FSerial: string;
     FPairingCode: string;
@@ -490,7 +523,7 @@ type
     property Port: string read FPort write FPort;
     property BaseUrl: string read FBaseUrl;
     property PairApi: string read FPairApi;
-    property XReportApi: string read FXReportApi;
+    property ReportsApi: string read FReportsApi;
     property StatusRequestApi: string read FStatusRequestApi write FStatusRequestApi;
     property HistoryReportsApi: string read FHistoryReportsApi write FHistoryReportsApi;
     property StartTransactionApi: string read FStartTransactionApi write FStartTransactionApi;
@@ -593,7 +626,7 @@ begin
 
   FBaseUrl := Format('https://%s:%s%s', [aIP, aPort, aEndPointResource]);
   FPairApi := '/pair';
-  FXReportApi := '/reports';
+  FReportsApi := '/reports';
   FStatusRequestApi := '/status';
   FHistoryReportsApi := '/historyReports';
   FStartTransactionApi := '/transaction';
@@ -671,14 +704,13 @@ end;
 procedure TFlatPAY.SetupXReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=XReport', [aFlatSetup.XReportApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
-//  aFlatPAYHttp.Request.Timeout := 5000;
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=XReport', [aFlatSetup.ReportsApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
 end;
 
 procedure TFlatPAY.SetupZReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=ZReport', [aFlatSetup.XReportApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=ZReport', [aFlatSetup.ReportsApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
 end;
 
 function TFlatPAY.CancelPaymentRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
@@ -807,9 +839,8 @@ begin
         200:
           begin
             result := TRUE;
-            aResponse := TFlatPAY_ErrorResponse.Create;
-            (aResponse as TFlatPAY_ErrorResponse).StatusCode := 200;
-            (aResponse as TFlatPAY_ErrorResponse).StatusText := lFlatPAYHttp.Response.Content;
+            aResponse := TFlatPAY_HistoryResponse.Create;
+            GetDefaultSerializer.DeserializeCollection(lFlatPAYHttp.Response.Content, (aResponse as TFlatPAY_HistoryResponse).FHistory , TFlatPAY_History);
           end
       else
         begin
@@ -1008,6 +1039,21 @@ end;
 
 destructor TFlatPAY_PaymentRequest.Destroy;
 begin
+  inherited;
+end;
+
+
+{ TTFlatPAY_HistoryResponse }
+
+constructor TFlatPAY_HistoryResponse.Create;
+begin
+  inherited;
+   FHistory := TObjectList<TFlatPAY_History>.Create;
+end;
+
+destructor TFlatPAY_HistoryResponse.Destroy;
+begin
+  FHistory.Free;
   inherited;
 end;
 

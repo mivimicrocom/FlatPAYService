@@ -12,7 +12,7 @@ object frmMain: TfrmMain
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Position = poScreenCenter
+  Position = poDesigned
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   TextHeight = 15
