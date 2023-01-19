@@ -604,6 +604,78 @@ type
     function GetStatusRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
   end;
 
+  TFlatPAYAction = class
+  private
+    { private declarations }
+    FKindOfJob: string;
+    FTransType: String;
+    FAmount: Double;
+    FGratiuty: Double;
+    FCashBack: Double;
+    FReference: string;
+    FLanguage: string;
+    FDisablePrint: Boolean;
+    Futi: string;
+    FXReportName: String;
+    FZReportName: string;
+    FHistoryName: string;
+    FLastTransactionName: string;
+    FGetStatusName: string;
+    FPaymentName: string;
+    FMerchantReceiptName: string;
+    FCardHolderReceiptName: string;
+    FResultFileName: string;
+    FResultOK: string;
+    FResultError: string;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    { public declarations }
+    [MVCNameAs('KindOfJob')]
+    property KindOfJob: string read FKindOfJob write FKindOfJob;
+    [MVCNameAs('TransType')]
+    property TransType: String read FTransType write FTransType;
+    [MVCNameAs('Amount')]
+    property Amount: Double read FAmount write FAmount;
+    [MVCNameAs('Gratiuty')]
+    property Gratiuty: Double read FGratiuty write FGratiuty;
+    [MVCNameAs('CashBack')]
+    property CashBack: Double read FCashBack write FCashBack;
+    [MVCNameAs('Reference')]
+    property Reference: string read FReference write FReference;
+    [MVCNameAs('Language')]
+    property Language: string read FLanguage write FLanguage;
+    [MVCNameAs('DisablePrint')]
+    property DisablePrint: Boolean read FDisablePrint write FDisablePrint;
+    [MVCNameAs('uti')]
+    property uti: string read Futi write Futi;
+    [MVCDoNotSerialize]
+    property XReportName: String read FXReportName;
+    [MVCDoNotSerialize]
+    property ZReportName: string read FZReportName;
+    [MVCDoNotSerialize]
+    property HistoryName: string read FHistoryName;
+    [MVCDoNotSerialize]
+    property LastTransactionName: string read FLastTransactionName;
+    [MVCDoNotSerialize]
+    property GetStatusName: string read FGetStatusName write FGetStatusName;
+    [MVCDoNotSerialize]
+    property PaymentName: string read FPaymentName write FPaymentName;
+    [MVCDoNotSerialize]
+    property MerchantReceiptName: string read FMerchantReceiptName write FMerchantReceiptName;
+    [MVCDoNotSerialize]
+    property CardHolderReceiptName: string read FCardHolderReceiptName write FCardHolderReceiptName;
+    [MVCDoNotSerialize]
+    property ResultFileName: string read FResultFileName write FResultFileName;
+    property ResultOK: string read FResultOK;
+    [MVCDoNotSerialize]
+    property ResultError: string read FResultError;
+  end;
+
+
+
+
+
 implementation
 
 constructor TFlatPAY_StatusRequestResponse.Create;
@@ -1056,5 +1128,29 @@ begin
   FHistory.Free;
   inherited;
 end;
+
+{ TFlatPAYAction }
+
+constructor TFlatPAYAction.Create;
+begin
+  FXReportName := 'x-report';
+  FZReportName := 'z-report';
+  FHistoryName := 'history';
+  FLastTransactionName := 'last-transaction';
+  FGetStatusName := 'get-status';
+  FPaymentName := 'payment';
+  FMerchantReceiptName := 'merchant-receipt.txt';
+  FCardHolderReceiptName := 'cardholder-receipt.txt';
+  FResultFileName := 'result.txt';
+  FResultOK := 'OK';
+  FResultError := 'ERROR';
+end;
+
+destructor TFlatPAYAction.Destroy;
+begin
+
+  inherited;
+end;
+
 
 end.
