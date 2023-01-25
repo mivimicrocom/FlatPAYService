@@ -17,8 +17,6 @@ uses
   Vcl.Menus,
   uFlatPAY,
   System.Generics.Collections,
-  // REST.Types,
-  // System.Json,
   MVCFramework,
   MVCFramework.Serializer.Defaults,
   MVCFramework.Serializer.Commons,
@@ -37,6 +35,7 @@ type
     tiAutoHide: TTimer;
     btnXReport: TButton;
     tiJob: TTimer;
+    Vis1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure TrayIcon1DblClick(Sender: TObject);
@@ -46,79 +45,12 @@ type
     procedure btnPairTerminalClick(Sender: TObject);
     procedure btnXReportClick(Sender: TObject);
     procedure tiJobTimer(Sender: TObject);
+    procedure Vis1Click(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
-
-//  TFlatPAYAction = class
-//  private
-//    { private declarations }
-//    FKindOfJob: string;
-//    FTransType: String;
-//    FAmount: Double;
-//    FGratiuty: Double;
-//    FCashBack: Double;
-//    FReference: string;
-//    FLanguage: string;
-//    FDisablePrint: Boolean;
-//    Futi: string;
-//    FXReportName: String;
-//    FZReportName: string;
-//    FHistoryName: string;
-//    FLastTransactionName: string;
-//    FGetStatusName: string;
-//    FPaymentName: string;
-//    FMerchantReceiptName: string;
-//    FCardHolderReceiptName: string;
-//    FResultFileName: string;
-//    FResultOK: string;
-//    FResultError: string;
-//  public
-//    constructor Create;
-//    destructor Destroy; override;
-//    { public declarations }
-//    [MVCNameAs('KindOfJob')]
-//    property KindOfJob: string read FKindOfJob write FKindOfJob;
-//    [MVCNameAs('TransType')]
-//    property TransType: String read FTransType write FTransType;
-//    [MVCNameAs('Amount')]
-//    property Amount: Double read FAmount write FAmount;
-//    [MVCNameAs('Gratiuty')]
-//    property Gratiuty: Double read FGratiuty write FGratiuty;
-//    [MVCNameAs('CashBack')]
-//    property CashBack: Double read FCashBack write FCashBack;
-//    [MVCNameAs('Reference')]
-//    property Reference: string read FReference write FReference;
-//    [MVCNameAs('Language')]
-//    property Language: string read FLanguage write FLanguage;
-//    [MVCNameAs('DisablePrint')]
-//    property DisablePrint: Boolean read FDisablePrint write FDisablePrint;
-//    [MVCNameAs('uti')]
-//    property uti: string read Futi write Futi;
-//    [MVCDoNotSerialize]
-//    property XReportName: String read FXReportName;
-//    [MVCDoNotSerialize]
-//    property ZReportName: string read FZReportName;
-//    [MVCDoNotSerialize]
-//    property HistoryName: string read FHistoryName;
-//    [MVCDoNotSerialize]
-//    property LastTransactionName: string read FLastTransactionName;
-//    [MVCDoNotSerialize]
-//    property GetStatusName: string read FGetStatusName write FGetStatusName;
-//    [MVCDoNotSerialize]
-//    property PaymentName: string read FPaymentName write FPaymentName;
-//    [MVCDoNotSerialize]
-//    property MerchantReceiptName: string read FMerchantReceiptName write FMerchantReceiptName;
-//    [MVCDoNotSerialize]
-//    property CardHolderReceiptName: string read FCardHolderReceiptName write FCardHolderReceiptName;
-//    [MVCDoNotSerialize]
-//    property ResultFileName: string read FResultFileName write FResultFileName;
-//    property ResultOK: string read FResultOK;
-//    [MVCDoNotSerialize]
-//    property ResultError: string read FResultError;
-//  end;
 
   TFlatPAYReturnAnswer = class
   private
@@ -279,6 +211,11 @@ begin
   self.Show;
 end;
 
+procedure TfrmMain.Vis1Click(Sender: TObject);
+begin
+  self.Show;
+end;
+
 { TMyFlatPAYCommunication }
 
 procedure TMyFlatPAYCommunication.AddLog(aText: String);
@@ -319,7 +256,7 @@ end;
 constructor TMyFlatPAYCommunication.Create;
 begin
   inherited;
-  FReturnAnswer:= TFlatPAYReturnAnswer.Create;
+  FReturnAnswer := TFlatPAYReturnAnswer.Create;
   FConnected := FALSE;
   FDisablePrint := FALSE;
   IncomingJobFile := 'Job.txt';
@@ -397,12 +334,12 @@ begin
     if (not(aTest)) then
     begin
       lPaymentJSONOutput := GetDefaultSerializer.SerializeObject(lReturnTransactionsResponse);
-      DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.PaymentName]), lPaymentJSONOutput);
+      DoWritetReturnResponse(FlatPAYAction.PaymentName, lPaymentJSONOutput);
       DoWritetReturnResponse(FlatPAYAction.MerchantReceiptName, lMerchantReceipt);
       DoWritetReturnResponse(FlatPAYAction.CardHolderReceiptName, lCardHolderReceipt);
-        FReturnAnswer.FJobCompleted := FlatPAYAction.PaymentName;
-        FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
-        DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
+      FReturnAnswer.FJobCompleted := FlatPAYAction.PaymentName;
+      FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
+      DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
     end;
   end
   else
@@ -426,12 +363,12 @@ begin
     if (not(aTest)) then
     begin
       lPaymentJSONOutput := GetDefaultSerializer.SerializeObject(lReturnTransactionsResponse);
-      DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.PaymentName]), lPaymentJSONOutput);
+      DoWritetReturnResponse(FlatPAYAction.PaymentName, lPaymentJSONOutput);
       DoWritetReturnResponse(FlatPAYAction.MerchantReceiptName, lMerchantReceipt);
       DoWritetReturnResponse(FlatPAYAction.CardHolderReceiptName, lCardHolderReceipt);
-        FReturnAnswer.FJobCompleted := FlatPAYAction.PaymentName;
-        FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
-        DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
+      FReturnAnswer.FJobCompleted := FlatPAYAction.PaymentName;
+      FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
+      DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
     end;
   end;
   lReturnTransactionsResponse.Free;
@@ -672,10 +609,10 @@ begin
       if (not(aTest)) then
       begin
         lXreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_XReportResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.XReportName]), lXreportJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.XReportName, lXreportJSONOutput);
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, Format('%s %s', [FlatPAYAction.XReportName, FlatPAYAction.ResultOK]));
         FReturnAnswer.FJobCompleted := FlatPAYAction.XReportName;
-        FReturnAnswer.FJobStatus := FlatPAYAction.ResultOk;
+        FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
       end;
     end
@@ -686,7 +623,7 @@ begin
       if (not(aTest)) then
       begin
         lXreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.XReportName]), lXreportJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.XReportName, lXreportJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.XReportName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -731,9 +668,9 @@ begin
       if (not(aTest)) then
       begin
         lZreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ZReportResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.ZReportName]), lZreportJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.ZReportName, lZreportJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.ZReportName;
-        FReturnAnswer.FJobStatus := FlatPAYAction.ResultOk;
+        FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
       end;
     end
@@ -744,7 +681,7 @@ begin
       if (not(aTest)) then
       begin
         lZreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.ZReportName]), lZreportJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.ZReportName, lZreportJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.ZReportName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -789,7 +726,7 @@ begin
         lHistoryreportJSONOutput := GetDefaultSerializer.SerializeCollection((lResponse as TFlatPAY_HistoryResponse).History);
         // Delphi to delphi
         // lHistoryreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_HistoryResponse).History);
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.HistoryName]), lHistoryreportJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.HistoryName, lHistoryreportJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.HistoryName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -802,7 +739,7 @@ begin
       if (not(aTest)) then
       begin
         lHistoryreportJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.HistoryName]), lHistoryreportJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.HistoryName, lHistoryreportJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.HistoryName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -835,10 +772,10 @@ begin
     if (not(aTest)) then
     begin
       lLastTransactionJSONOutput := '{ "StatusCode" : -99, "StatusText" : "no uti entered" }';
-      DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.LastTransactionName]), lLastTransactionJSONOutput);
-        FReturnAnswer.FJobCompleted := FlatPAYAction.LastTransactionName;
-        FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
-        DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
+      DoWritetReturnResponse(FlatPAYAction.LastTransactionName, lLastTransactionJSONOutput);
+      FReturnAnswer.FJobCompleted := FlatPAYAction.LastTransactionName;
+      FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
+      DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
     end;
     exit;
   end;
@@ -868,7 +805,7 @@ begin
       if (not(aTest)) then
       begin
         lLastTransactionJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_GetTransactionsRespons));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.LastTransactionName]), lLastTransactionJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.LastTransactionName, lLastTransactionJSONOutput);
         DoWritetReturnResponse(FlatPAYAction.MerchantReceiptName, lMerchantReceipt);
         DoWritetReturnResponse(FlatPAYAction.CardHolderReceiptName, lCardHolderReceipt);
         FReturnAnswer.FJobCompleted := FlatPAYAction.LastTransactionName;
@@ -883,7 +820,7 @@ begin
       if (not(aTest)) then
       begin
         lLastTransactionJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.LastTransactionName]), lLastTransactionJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.LastTransactionName, lLastTransactionJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.LastTransactionName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -923,7 +860,7 @@ begin
       if (not(aTest)) then
       begin
         lGetStatusJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_StatusRequestResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.GetStatusName]), lGetStatusJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.GetStatusName, lGetStatusJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.GetStatusName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -936,7 +873,7 @@ begin
       if (not(aTest)) then
       begin
         lGetStatusJSONOutput := GetDefaultSerializer.SerializeObject((lResponse as TFlatPAY_ErrorResponse));
-        DoWritetReturnResponse(Format('%s.json', [FlatPAYAction.GetStatusName]), lGetStatusJSONOutput);
+        DoWritetReturnResponse(FlatPAYAction.GetStatusName, lGetStatusJSONOutput);
         FReturnAnswer.FJobCompleted := FlatPAYAction.GetStatusName;
         FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
         DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
@@ -948,28 +885,5 @@ begin
     FreeAndNil(lFlatPAY);
   end;
 end;
-
-//{ TFlatPAYAction }
-//
-//constructor TFlatPAYAction.Create;
-//begin
-//  FXReportName := 'x-report';
-//  FZReportName := 'z-report';
-//  FHistoryName := 'history';
-//  FLastTransactionName := 'last-transaction';
-//  FGetStatusName := 'get-status';
-//  FPaymentName := 'payment';
-//  FMerchantReceiptName := 'merchant-receipt.txt';
-//  FCardHolderReceiptName := 'cardholder-receipt.txt';
-//  FResultFileName := 'result.txt';
-//  FResultOK := 'OK';
-//  FResultError := 'ERROR';
-//end;
-//
-//destructor TFlatPAYAction.Destroy;
-//begin
-//
-//  inherited;
-//end;
 
 end.

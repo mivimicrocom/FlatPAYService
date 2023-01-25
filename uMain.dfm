@@ -12,7 +12,7 @@ object frmMain: TfrmMain
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Position = poDesigned
+  Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   TextHeight = 15
@@ -76,6 +76,8 @@ object frmMain: TfrmMain
       ReadOnly = True
       ScrollBars = ssBoth
       TabOrder = 0
+      ExplicitWidth = 733
+      ExplicitHeight = 759
     end
   end
   object TrayIcon1: TTrayIcon
@@ -89,6 +91,10 @@ object frmMain: TfrmMain
   object PopupMenu1: TPopupMenu
     Left = 768
     Top = 192
+    object Vis1: TMenuItem
+      Caption = 'Vis'
+      OnClick = Vis1Click
+    end
     object Afslut1: TMenuItem
       Caption = 'Afslut'
       OnClick = Afslut1Click

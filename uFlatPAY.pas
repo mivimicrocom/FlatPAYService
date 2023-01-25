@@ -1133,12 +1133,12 @@ end;
 
 constructor TFlatPAYAction.Create;
 begin
-  FXReportName := 'x-report';
-  FZReportName := 'z-report';
-  FHistoryName := 'history';
-  FLastTransactionName := 'last-transaction';
-  FGetStatusName := 'get-status';
-  FPaymentName := 'payment';
+  FXReportName := 'x-report.json';
+  FZReportName := 'z-report.json';
+  FHistoryName := 'history.json';
+  FLastTransactionName := 'last-transaction.json';
+  FGetStatusName := 'get-status.json';
+  FPaymentName := 'payment.json';
   FMerchantReceiptName := 'merchant-receipt.txt';
   FCardHolderReceiptName := 'cardholder-receipt.txt';
   FResultFileName := 'result.txt';

@@ -11,7 +11,7 @@ object frmFlatPAY: TfrmFlatPAY
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  Position = poOwnerFormCenter
+  Position = poDesigned
   OnCloseQuery = FormCloseQuery
   DesignSize = (
     383

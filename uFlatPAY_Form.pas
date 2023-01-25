@@ -116,6 +116,9 @@ begin
       // Starting background thread to hancle FlatPAY payment and all needed to handled messages and flow in genera.
       CallFlatPAYAndStartPayment;
       // Show iteself (this form)    HVAD FÅR DEN TIL AT STOPPE??
+      top := (screen.Height DIV 2) - (Height DIV 2);
+      left := (screen.Width DIV 2) - (Width DIV 2);
+//      lAmount.Caption := 'SH: '+screen.Height.ToString + ' SW: '+screen.Width.ToString +  'H: ' + Height.ToString + 'W: '+Width.ToString + 'H: ';
       Result := ShowModal = mrOK;
       try
         // Always return Unique Transaction ID. With this we can later ask on this specific transaction
@@ -425,6 +428,7 @@ begin
   // This routine is called when cancelling by clerk has failed
 
   // Show it self
+  Position := poDesktopCenter;
   if not Visible then
     Show;
   BringToFront;
