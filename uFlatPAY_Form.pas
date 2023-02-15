@@ -1,4 +1,8 @@
 unit uFlatPAY_Form;
+(*
+  This form will be displayed when a sale/return is being made.
+  It is a lot like MobilePAY.
+*)
 
 interface
 

@@ -1,4 +1,5 @@
 unit uSettings;
+//This is the settings form.
 
 interface
 

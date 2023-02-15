@@ -222,9 +222,10 @@ procedure TMyFlatPAYCommunication.AddLog(aText: String);
 var
   lStr: string;
 begin
+  //This will add text to memo and save it in a file. Pure log
   lStr := FormatDateTime('dd-mm-yyyy hh:mm:ss', NOW) + ': ' + aText;
   frmMain.mmoLog.Lines.Add(lStr);
-  TFile.AppendAllText((FLogFolder + 'Log_' + FormatDateTime('yyyymmdd', NOW) + '.log'), lStr + #13#10);
+  TFile.AppendAllText((FLogFolder + 'Log_' + FormatDateTime('yyyymmdd', NOW) + '.log'), lStr + #13#10, TEncoding.UTF8);
 end;
 
 procedure TMyFlatPAYCommunication.CleanResultFolder;
@@ -272,6 +273,7 @@ end;
 
 procedure TMyFlatPAYCommunication.CreateSubFolders;
 begin
+  //This will create the foldes needed.
   FLogFolderIncomingJobs := IncludeTrailingPathDelimiter(FLogFolder + 'IncomingJobs\' + FormatDateTime('yyyy', NOW) + '\' + FormatDateTime('mm', NOW) + '\' +
     FormatDateTime('dd', NOW));
   FLogFolderOutgoingResult := IncludeTrailingPathDelimiter(FLogFolder + 'OutgoingResults\' + FormatDateTime('yyyy', NOW) + '\' + FormatDateTime('mm', NOW) + '\' +
@@ -305,26 +307,35 @@ var
   lCardHolderReceipt: string;
   lMerchantReceipt: string;
 begin
+  //This will handle SALE or RETURN.
+
+  //Do clean folders - so everybody is ready for action.
   CleanResultFolder;
   AddLog('Payment');
   AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
 
+  //Create response
   lReturnTransactionsResponse := TFlatPAY_GetTransactionsRespons.Create;
 
+  //Do sale/return.
   if frmFlatPAY.DoFlatPAYPayment(FlatPAYSetup, aFlatPAY_Action.TransType, aFlatPAY_Action.Amount, aFlatPAY_Action.Gratiuty, aFlatPAY_Action.CashBack, aFlatPAY_Action.Reference,
     aFlatPAY_Action.Language, aFlatPAY_Action.DisablePrint, luti, lReturnTransactionsResponse,
     20000) then
   begin
+    //Accepted
     AddLog(Format(' Sale accepted (uti: %s, %s;  cardType: %s)', [luti, lReturnTransactionsResponse.uti, lReturnTransactionsResponse.cardType]));
+    //Serialize response to tell EasyPOS Salg this went well.
     lPaymentJSONOutput := GetDefaultSerializer.SerializeObject(lReturnTransactionsResponse);
     AddLog('Result: ' + lPaymentJSONOutput);
 
+    //Set cardholdes copy
     lCardHolderReceipt := '';
     for ii := 0 to length(lReturnTransactionsResponse.cardholderReceipt) - 1 do
     begin
       lCardHolderReceipt := lCardHolderReceipt + #13#10 + lReturnTransactionsResponse.cardholderReceipt[ii];
     end;
 
+    //Set merchant copy
     lMerchantReceipt := '';
     for ii := 0 to length(lReturnTransactionsResponse.merchantReceipt) - 1 do
     begin
@@ -333,27 +344,35 @@ begin
 
     if (not(aTest)) then
     begin
+      //Serialize entire response
       lPaymentJSONOutput := GetDefaultSerializer.SerializeObject(lReturnTransactionsResponse);
+      //Write response
       DoWritetReturnResponse(FlatPAYAction.PaymentName, lPaymentJSONOutput);
+      //Write merchant copy
       DoWritetReturnResponse(FlatPAYAction.MerchantReceiptName, lMerchantReceipt);
+      //Write card hodlers copy
       DoWritetReturnResponse(FlatPAYAction.CardHolderReceiptName, lCardHolderReceipt);
       FReturnAnswer.FJobCompleted := FlatPAYAction.PaymentName;
       FReturnAnswer.FJobStatus := FlatPAYAction.ResultOK;
+      //Write status of job (this tells EasyPOS Salg all is done and the program can continue)
       DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
     end;
   end
   else
   begin
+    //Sale/Return did not go well. It could be rejected, wrong pin etc
     AddLog(Format(' Sale not accepted (uti: %s, %s;  cardType: %s)', [luti, lReturnTransactionsResponse.uti, lReturnTransactionsResponse.cardType]));
     lPaymentJSONOutput := GetDefaultSerializer.SerializeObject(lReturnTransactionsResponse);
     AddLog('Result: ' + lPaymentJSONOutput);
 
+    //Fetch cardholders copy
     lCardHolderReceipt := '';
     for ii := 0 to length(lReturnTransactionsResponse.cardholderReceipt) - 1 do
     begin
       lCardHolderReceipt := lCardHolderReceipt + #13#10 + lReturnTransactionsResponse.cardholderReceipt[ii];
     end;
 
+    //Fetch merchants copy
     lMerchantReceipt := '';
     for ii := 0 to length(lReturnTransactionsResponse.merchantReceipt) - 1 do
     begin
@@ -363,11 +382,16 @@ begin
     if (not(aTest)) then
     begin
       lPaymentJSONOutput := GetDefaultSerializer.SerializeObject(lReturnTransactionsResponse);
+      //Write entire response
       DoWritetReturnResponse(FlatPAYAction.PaymentName, lPaymentJSONOutput);
+      //Write merchant copy
       DoWritetReturnResponse(FlatPAYAction.MerchantReceiptName, lMerchantReceipt);
+      //Write card holders copy
       DoWritetReturnResponse(FlatPAYAction.CardHolderReceiptName, lCardHolderReceipt);
+
       FReturnAnswer.FJobCompleted := FlatPAYAction.PaymentName;
       FReturnAnswer.FJobStatus := FlatPAYAction.ResultError;
+      //Write status of the job
       DoWritetReturnResponse(FlatPAYAction.ResultFileName, GetDefaultSerializer.SerializeObject(FReturnAnswer));
     end;
   end;
@@ -376,7 +400,8 @@ end;
 
 procedure TMyFlatPAYCommunication.DoWritetReturnResponse(aFileName: string; aContent: string);
 begin
-  TFile.WriteAllText((FOutgoingResultFolder + aFileName), aContent);
+  //Will write to a file on disc
+  TFile.WriteAllText((FOutgoingResultFolder + aFileName), aContent, TEncoding.UTF8);
 end;
 
 procedure TMyFlatPAYCommunication.LookForAJob;
@@ -384,7 +409,12 @@ var
   lMyFileStr: string;
   lFromFile: string;
   lToFile: string;
+  lFileMoved: Boolean;
+  lMoveCounter: Integer;
+  JobFileIsRead: Boolean;
+  lFileReadCounter: integer;
 begin
+  //This will look for a job file. It will then read this, deserialize it and do what it should.
   if (FIncomingJobFolder <> '') then
   begin
     if (FileExists(FIncomingJobFolder + FIncomingJobFile)) then
@@ -392,21 +422,68 @@ begin
       // Make sure log folders with dates exist
       CreateSubFolders;
 
+      // Need to be sure, handle has been release;
       // Read content of job file
-      lMyFileStr := TFile.ReadAllText((FIncomingJobFolder + FIncomingJobFile), TEncoding.UTF8);
+      JobFileIsRead := FALSE;
+      lFileReadCounter := 0;
+      //Will try 3 times to ensure, taht handle from EasyPOS Salg has been released and file can be read.
+      repeat
+        try
+          sleep(250);
+          lMyFileStr := TFile.ReadAllText((FIncomingJobFolder + FIncomingJobFile), TEncoding.UTF8);
+          JobFileIsRead := TRUE;
+          AddLog('Job læst');
+        except
+          AddLog(Format('Forsøger at læse job %d',[lFileReadCounter]));
+          JobFileIsRead := FALSE;
+          INC(lFileReadCounter);
+          Sleep(250);
+        end;
+      until JobFileIsRead or (lFileReadCounter>6);
+      if (lFileReadCounter>6) then
+      begin
+        AddLog('FlatPAY Service kan ikke læse jobebt.');
+        AddLog('Afbryder');
+        Exit;
+      end;
       // Set up from and to file
       lFromFile := (FIncomingJobFolder + FIncomingJobFile);
       lToFile := (FLogFolderIncomingJobs + 'Job_' + FormatDateTime('yyyymmdd_hhmmss', NOW) + '.txt');
 
       // Move job file
-      if (NOT(MoveFile(PWideChar(lFromFile), PWideChar(lToFile)))) then
+      lFileMoved := FALSE;
+      lMoveCounter := 0;
+      repeat
+        AddLog(Format('Forsøger at læse job %d',[lFileReadCounter]));
+        if (NOT(MoveFile(PWideChar(lFromFile), PWideChar(lToFile)))) then
+        begin
+          INC(lMoveCounter);
+           AddLog(Format('Forsøger at flyttejob %d',[lMoveCounter]));
+          if (lMoveCounter > 3) then
+            AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile)
+          else
+            Sleep(500);
+        end
+        else
+        begin
+          AddLog('Job fil flyttet');
+          lFileMoved := TRUE;
+        end;
+      until lFileMoved or (lMoveCounter > 3);
+      if (lMoveCounter>3) then
+      begin
         AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile);
+        AddLog('Afbryder');
+        Exit;
+      end;
 
       // Create whats needed to communicate with FlatPAY
       FlatPAYAction := TFlatPAYAction.Create;
       try
         // Deserialize job
+        AddLog('Behandler job: '+lMyFileStr);
         GetDefaultSerializer.DeserializeObject(lMyFileStr, FlatPAYAction);
+        AddLog('Skal lave: '+FlatPAYAction.KindOfJob);
 
         if (AnsiUpperCase(FlatPAYAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.XReportName)) then
         begin
@@ -438,7 +515,6 @@ begin
           AddLog(Format('JOB: %s', [FlatPAYAction.PaymentName]));
           DoPayment(FALSE, FlatPAYAction);
         end;
-
       finally
         FlatPAYAction.Free;
       end;
@@ -452,6 +528,7 @@ var
   lResponse: TFlatPAY_Response;
   InputPairingCode: string;
 begin
+  //This will pair with the terminal. Once paired and a auth token returned, this should be stored and used "forveer"
   if (FPort <> '') and (FIP <> '') and (FSerial <> '') and (FEndpointResource <> '') then
   begin
     InputPairingCode := InputBox('Pairing code', 'Indtast pairing code', '');
@@ -504,11 +581,25 @@ procedure TMyFlatPAYCommunication.ReadSettingsFromINIFile;
 var
   iniFile: TIniFile;
 begin
+   //This will read settings from INI files.
+   (*
+     This has these settings:
+
+      - Incoming job folder
+      - Outgoing answer folder
+      - Log folder.
+      - IP
+      - Port
+      - Serial number of the terminal
+      - Endpoint
+      - Auth token
+
+   *)
   iniFile := TIniFile.Create(ExtractFilePath(Application.ExeName) + '\Settings.ini');
   try
-    FIncomingJobFolder := IncludeTrailingPathDelimiter(iniFile.ReadString('COMMUNICATION', 'IncomingJobFolder', ''));
-    FOutgoingResultFolder := IncludeTrailingPathDelimiter(iniFile.ReadString('COMMUNICATION', 'OutgoingResultFolder', ''));
-    FLogFolder := IncludeTrailingPathDelimiter(iniFile.ReadString('COMMUNICATION', 'LogFolder', ''));
+    FIncomingJobFolder := IncludeTrailingPathDelimiter(iniFile.ReadString('COMMUNICATION', 'IncomingJobFolder', 'C:\FlatPay\FlatPAY_Comm_Folder\IngoingJObs\'));
+    FOutgoingResultFolder := IncludeTrailingPathDelimiter(iniFile.ReadString('COMMUNICATION', 'OutgoingResultFolder', 'C:\FlatPay\FlatPAY_Comm_Folder\OutgoingResults\'));
+    FLogFolder := IncludeTrailingPathDelimiter(iniFile.ReadString('COMMUNICATION', 'LogFolder', 'C:\FlatPay\FlatPAY_Comm_Folder\Logs\'));
     FIP := iniFile.ReadString('COMMUNICATION', 'IP', '');
     FPort := iniFile.ReadString('COMMUNICATION', 'Port', '8080');
     FSerial := iniFile.ReadString('COMMUNICATION', 'Serial', '');
@@ -522,6 +613,7 @@ end;
 
 procedure TMyFlatPAYCommunication.ShowSettings;
 begin
+  //This will show the form, where settings can be altered
   try
     frmSettings := TfrmSettings.Create(nil);
     frmSettings.edIncomingJobFolder.Text := FIncomingJobFolder;
@@ -560,6 +652,20 @@ procedure TMyFlatPAYCommunication.WriteSettingsToINIFile;
 var
   iniFile: TIniFile;
 begin
+   //This will write settings from INI files.
+   (*
+     This has these settings:
+
+      - Incoming job folder
+      - Outgoing answer folder
+      - Log folder.
+      - IP
+      - Port
+      - Serial number of the terminal
+      - Endpoint
+      - Auth token
+
+   *)
   iniFile := TIniFile.Create(ExtractFilePath(Application.ExeName) + '\Settings.ini');
   try
     iniFile.WriteString('COMMUNICATION', 'IncomingJobFolder', FIncomingJobFolder);
@@ -583,6 +689,7 @@ var
   lResponse: TFlatPAY_Response;
   lXreportJSONOutput: string;
 begin
+  //This will do a x-report
   CleanResultFolder;
   AddLog('X-Rapport');
   AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
@@ -642,6 +749,7 @@ var
   lResponse: TFlatPAY_Response;
   lZreportJSONOutput: string;
 begin
+  //This will do a z-report
   CleanResultFolder;
   AddLog('X-Rapport');
   AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
@@ -700,6 +808,7 @@ var
   lResponse: TFlatPAY_Response;
   lHistoryreportJSONOutput: string;
 begin
+  //This will do a history call
   CleanResultFolder;
   AddLog('History-Rapport');
   AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
@@ -761,6 +870,7 @@ var
   lCardHolderReceipt: string;
   lMerchantReceipt: string;
 begin
+  //This will fetch last reciept
   CleanResultFolder;
   AddLog('Get (last) transaction');
   AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
@@ -840,6 +950,7 @@ var
   lMyDisplayData: TDisplayData;
   lGetStatusJSONOutput: string;
 begin
+  //This will get statuses. It only here, because it can be tested. It is used inside to form showned when doing sales/returns
   CleanResultFolder;
   AddLog('Get status');
   AddLog('  BaseURL: ' + FlatPAYSetup.BaseURL);
