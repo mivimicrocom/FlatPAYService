@@ -1,79 +1,79 @@
 unit uFlatPAY;
 
 (*
-This unit has been developed by:    Michael
-The documentation is here:          https://app.swaggerhub.com/apis-docs/PhilClarks/POSitiveWebLink/1.0.1#/admins/execute
-And we have a POSTMAN colleection.
+  This unit has been developed by:    Michael
+  The documentation is here:          https://app.swaggerhub.com/apis-docs/PhilClarks/POSitiveWebLink/1.0.1#/admins/execute
+  And we have a POSTMAN colleection.
 
-Statuses that can be returned accorind to swagger:
+  Statuses that can be returned accorind to swagger:
 
-0 "Transaction started",
-1 "Transaction Approved",
-2 "Transaction Declined",
-3 "Card type = MSR",
-4 "MSR Transaction Declined",
-5 "Card type EMV",
-6 "Card type CTLS",
-7 "CTLS Transaction Declined",
-8 "Card type = manual",
-9 "Transaction Cancelled",
-10 "Transaction Referred",
-11 "Transaction Finished",
-12 "GetCard Screen Displayed",
-13 "Manual Pan Screen Displayed",
-14 "Pin Requested(Offline)",
-15 "Pin Requested(Online)",
-16 "Host Approved",
-17 "Deferred Auth",
-18 "Reversal Approved",
-19 "Reversal Declined",
-20 "Transaction Declined",
-21 "Card User Cancelled",
-22 "GENAC2 Failed",
-23 "Printer General Error",
-24 "Printer Out Of Paper",
-25 "Amount High",
-26 "Amount Low",
-27 "Card Blocked",
-28 "Card Expired",
-29 "Card Type Not Allowed",
-30 "Invalid Card Number",
-31 "Pin Invalid Retry",
-32 "Pin Invalid Last Try",
-33 "Cashback Too High",
-34 "Pin Cvm Required",
-35 "Signature Cvm Required",
-36 "Locally Declined",
-37 "Host Declined",
-38 "Issuer Declined",
-39 "Issuer Unavailable",
-40 "Update In Progress Error",
-41 "Update Required Error",
-42 "Reversal Not Possible Error",
-43 "Transaction Type Not Allowed",
-44 "Login Failed",
-45 "Chip Unreadable",
-46 "Chip App Unsupported Please Swipe",
-47 "Chip Rid Unsupported Please Swipe",
-48 "Chip Invalid Please Swipe",
-49 "Chip not allowed Please swipe",
-50 "Chip detected Please Insert",
-51 "Chip detected Please Insert OR Force Fallback",
-52 "Insert Or Swipe Card",
-53 "Magnetic Strip Unreadable",
-54 "Magnetic Stripe Invalid",
-55 "Magnetic Stripe Not Allowed",
-56 "Manual Input Invalid",
-57 "Manual Input Invalid Length",
-58 "Manual Input Invalid Date",
-59 "Cashback Only Allowed Online",
-60 "Transaction Only Allowed Online",
-61 "Approval Code Invalid",
-62 "Password Invalid",
-63 "Close Batch Required",
-64 "Close Batch Not Required",
-65 "Technical Error",
-66 "Hardware Error"
+  0 "Transaction started",
+  1 "Transaction Approved",
+  2 "Transaction Declined",
+  3 "Card type = MSR",
+  4 "MSR Transaction Declined",
+  5 "Card type EMV",
+  6 "Card type CTLS",
+  7 "CTLS Transaction Declined",
+  8 "Card type = manual",
+  9 "Transaction Cancelled",
+  10 "Transaction Referred",
+  11 "Transaction Finished",
+  12 "GetCard Screen Displayed",
+  13 "Manual Pan Screen Displayed",
+  14 "Pin Requested(Offline)",
+  15 "Pin Requested(Online)",
+  16 "Host Approved",
+  17 "Deferred Auth",
+  18 "Reversal Approved",
+  19 "Reversal Declined",
+  20 "Transaction Declined",
+  21 "Card User Cancelled",
+  22 "GENAC2 Failed",
+  23 "Printer General Error",
+  24 "Printer Out Of Paper",
+  25 "Amount High",
+  26 "Amount Low",
+  27 "Card Blocked",
+  28 "Card Expired",
+  29 "Card Type Not Allowed",
+  30 "Invalid Card Number",
+  31 "Pin Invalid Retry",
+  32 "Pin Invalid Last Try",
+  33 "Cashback Too High",
+  34 "Pin Cvm Required",
+  35 "Signature Cvm Required",
+  36 "Locally Declined",
+  37 "Host Declined",
+  38 "Issuer Declined",
+  39 "Issuer Unavailable",
+  40 "Update In Progress Error",
+  41 "Update Required Error",
+  42 "Reversal Not Possible Error",
+  43 "Transaction Type Not Allowed",
+  44 "Login Failed",
+  45 "Chip Unreadable",
+  46 "Chip App Unsupported Please Swipe",
+  47 "Chip Rid Unsupported Please Swipe",
+  48 "Chip Invalid Please Swipe",
+  49 "Chip not allowed Please swipe",
+  50 "Chip detected Please Insert",
+  51 "Chip detected Please Insert OR Force Fallback",
+  52 "Insert Or Swipe Card",
+  53 "Magnetic Strip Unreadable",
+  54 "Magnetic Stripe Invalid",
+  55 "Magnetic Stripe Not Allowed",
+  56 "Manual Input Invalid",
+  57 "Manual Input Invalid Length",
+  58 "Manual Input Invalid Date",
+  59 "Cashback Only Allowed Online",
+  60 "Transaction Only Allowed Online",
+  61 "Approval Code Invalid",
+  62 "Password Invalid",
+  63 "Close Batch Required",
+  64 "Close Batch Not Required",
+  65 "Technical Error",
+  66 "Hardware Error"
 *)
 
 interface
@@ -147,137 +147,137 @@ type
   // ResponseType to Xreport
   TFlatPAY_XReportResponse = class(TFlatPAY_Response)
   private
-    FcashbackAmount: double;
-    FcashbackCount: integer;
-    FcompletionAmount: double;
-    FcompletionCount: integer;
-    FgratuityAmount: double;
-    FgratuityCount: integer;
-    FrefundAmount: double;
-    FrefundCount: integer;
+    FcashbackAmount: Double;
+    FcashbackCount: Integer;
+    FcompletionAmount: Double;
+    FcompletionCount: Integer;
+    FgratuityAmount: Double;
+    FgratuityCount: Integer;
+    FrefundAmount: Double;
+    FrefundCount: Integer;
     FreportResponse: boolean;
     FreportType: string;
-    FsaleAmount: double;
-    FsaleCount: integer;
-    FpenniesAmount: double;
-    FpenniesCotu: integer;
+    FsaleAmount: Double;
+    FsaleCount: Integer;
+    FpenniesAmount: Double;
+    FpenniesCotu: Integer;
   public
     [MVCNameAs('cashbackAmount')]
-    property cashbackAmount: double read FcashbackAmount write FcashbackAmount;
+    property cashbackAmount: Double read FcashbackAmount write FcashbackAmount;
     [MVCNameAs('cashbackCount')]
-    property cashbackCount: integer read FcashbackCount write FcashbackCount;
+    property cashbackCount: Integer read FcashbackCount write FcashbackCount;
     [MVCNameAs('completionAmount')]
-    property completionAmount: double read FcompletionAmount write FcompletionAmount;
+    property completionAmount: Double read FcompletionAmount write FcompletionAmount;
     [MVCNameAs('completionCount')]
-    property completionCount: integer read FcompletionCount write FcompletionCount;
+    property completionCount: Integer read FcompletionCount write FcompletionCount;
     [MVCNameAs('gratuityAmount')]
-    property gratuityAmount: double read FgratuityAmount write FgratuityAmount;
+    property gratuityAmount: Double read FgratuityAmount write FgratuityAmount;
     [MVCNameAs('gratuityCount')]
-    property gratuityCount: integer read FgratuityCount write FgratuityCount;
+    property gratuityCount: Integer read FgratuityCount write FgratuityCount;
     [MVCNameAs('penniesAmount')]
-    property penniesAmount: double read FpenniesAmount write FpenniesAmount;
+    property penniesAmount: Double read FpenniesAmount write FpenniesAmount;
     [MVCNameAs('penniesCotu')]
-    property penniesCotu: integer read FpenniesCotu write FpenniesCotu;
+    property penniesCotu: Integer read FpenniesCotu write FpenniesCotu;
     [MVCNameAs('refundAmount')]
-    property refundAmount: double read FrefundAmount write FrefundAmount;
+    property refundAmount: Double read FrefundAmount write FrefundAmount;
     [MVCNameAs('refundCount')]
-    property refundCount: integer read FrefundCount write FrefundCount;
+    property refundCount: Integer read FrefundCount write FrefundCount;
     [MVCNameAs('reportResponse')]
     property reportResponse: boolean read FreportResponse write FreportResponse;
     [MVCNameAs('reportType')]
     property reportType: string read FreportType write FreportType;
     [MVCNameAs('saleAmount')]
-    property saleAmount: double read FsaleAmount write FsaleAmount;
+    property saleAmount: Double read FsaleAmount write FsaleAmount;
     [MVCNameAs('saleCount')]
-    property saleCount: integer read FsaleCount write FsaleCount;
+    property saleCount: Integer read FsaleCount write FsaleCount;
   end;
 
-  (*ResponseType to Zreport*)
+  (* ResponseType to Zreport *)
   TFlatPAY_ZReportResponse = class(TFlatPAY_Response)
   private
-    FcashbackAmount: double;
-    FcashbackCount: integer;
-    FcompletionAmount: double;
-    FcompletionCount: integer;
-    FgratuityAmount: double;
-    FgratuityCount: integer;
-    FrefundAmount: double;
-    FrefundCount: integer;
+    FcashbackAmount: Double;
+    FcashbackCount: Integer;
+    FcompletionAmount: Double;
+    FcompletionCount: Integer;
+    FgratuityAmount: Double;
+    FgratuityCount: Integer;
+    FrefundAmount: Double;
+    FrefundCount: Integer;
     FreportResponse: boolean;
     FreportType: string;
-    FsaleAmount: double;
-    FsaleCount: integer;
-    FpenniesAmount: double;
-    FpenniesCotu: integer;
+    FsaleAmount: Double;
+    FsaleCount: Integer;
+    FpenniesAmount: Double;
+    FpenniesCotu: Integer;
   public
     [MVCNameAs('cashbackAmount')]
-    property cashbackAmount: double read FcashbackAmount write FcashbackAmount;
+    property cashbackAmount: Double read FcashbackAmount write FcashbackAmount;
     [MVCNameAs('cashbackCountcashbackCount')]
-    property cashbackCount: integer read FcashbackCount write FcashbackCount;
+    property cashbackCount: Integer read FcashbackCount write FcashbackCount;
     [MVCNameAs('completionAmount')]
-    property completionAmount: double read FcompletionAmount write FcompletionAmount;
+    property completionAmount: Double read FcompletionAmount write FcompletionAmount;
     [MVCNameAs('completionCount')]
-    property completionCount: integer read FcompletionCount write FcompletionCount;
+    property completionCount: Integer read FcompletionCount write FcompletionCount;
     [MVCNameAs('gratuityAmount')]
-    property gratuityAmount: double read FgratuityAmount write FgratuityAmount;
+    property gratuityAmount: Double read FgratuityAmount write FgratuityAmount;
     [MVCNameAs('gratuityCount')]
-    property gratuityCount: integer read FgratuityCount write FgratuityCount;
+    property gratuityCount: Integer read FgratuityCount write FgratuityCount;
     [MVCNameAs('penniesAmount')]
-    property penniesAmount: double read FpenniesAmount write FpenniesAmount;
+    property penniesAmount: Double read FpenniesAmount write FpenniesAmount;
     [MVCNameAs('penniesCotu')]
-    property penniesCotu: integer read FpenniesCotu write FpenniesCotu;
+    property penniesCotu: Integer read FpenniesCotu write FpenniesCotu;
     [MVCNameAs('refundAmount')]
-    property refundAmount: double read FrefundAmount write FrefundAmount;
+    property refundAmount: Double read FrefundAmount write FrefundAmount;
     [MVCNameAs('refundCount')]
-    property refundCount: integer read FrefundCount write FrefundCount;
+    property refundCount: Integer read FrefundCount write FrefundCount;
     [MVCNameAs('reportResponse')]
     property reportResponse: boolean read FreportResponse write FreportResponse;
     [MVCNameAs('reportType')]
     property reportType: string read FreportType write FreportType;
     [MVCNameAs('saleAmount')]
-    property saleAmount: double read FsaleAmount write FsaleAmount;
+    property saleAmount: Double read FsaleAmount write FsaleAmount;
     [MVCNameAs('saleCount')]
-    property saleCount: integer read FsaleCount write FsaleCount;
+    property saleCount: Integer read FsaleCount write FsaleCount;
   end;
 
-  (*Errorresponse type*)
+  (* Errorresponse type *)
   TFlatPAY_ErrorResponse = class(TFlatPAY_Response)
   private
-    FStatusCode: integer;
+    FStatusCode: Integer;
     FStatusText: string;
   public
-    property StatusCode: integer read FStatusCode write FStatusCode;
+    property StatusCode: Integer read FStatusCode write FStatusCode;
     property StatusText: string read FStatusText write FStatusText;
   end;
 
   // Start transaction response type
   TFlatPAY_StartTransactionRepsons = class(TFlatPAY_Response)
   private
-    FamountCashback: integer;
-    FamountGratuity: integer;
-    FamountTrans: integer;
+    FamountCashback: Integer;
+    FamountGratuity: Integer;
+    FamountTrans: Integer;
     FtransType: string;
     Futi: string;
   public
     [MVCNameAs('amountCashback')]
-    property amountCashback: integer read FamountCashback write FamountCashback;
+    property amountCashback: Integer read FamountCashback write FamountCashback;
     [MVCNameAs('amountGratuity')]
-    property amountGratuity: integer read FamountGratuity write FamountGratuity;
+    property amountGratuity: Integer read FamountGratuity write FamountGratuity;
     [MVCNameAs('amountTrans')]
-    property amountTrans: integer read FamountTrans write FamountTrans;
+    property amountTrans: Integer read FamountTrans write FamountTrans;
     [MVCNameAs('transType')]
     property transType: string read FtransType write FtransType;
     [MVCNameAs('uti')]
     property uti: string read Futi write Futi;
   end;
 
-  (*Cancel transaction response type*)
+  (* Cancel transaction response type *)
   TFlatPAY_CancelTransactionRespons = class(TFlatPAY_Response)
   private
-    FamountCashback: integer;
-    FamountDiscount: integer;
-    FamountGratuity: integer;
-    FamountTrans: integer;
+    FamountCashback: Integer;
+    FamountDiscount: Integer;
+    FamountGratuity: Integer;
+    FamountTrans: Integer;
     FcardPan: string;
     FcardPanSequenceNumber: string;
     FcardScheme: string;
@@ -287,28 +287,28 @@ type
     FerrorCode: string;
     FerrorText: string;
     FmerchantReference: string;
-    FpenniesAmount: integer;
-    FreceiptNumber: integer;
+    FpenniesAmount: Integer;
+    FreceiptNumber: Integer;
     FsoftwareVersion: string;
     Fstan: string;
     FterminalId: string;
     FtransApproved: boolean;
     FtransCancelled: boolean;
     FtransCurrencyCode: string;
-    FtransDateTimeEpoch: integer;
+    FtransDateTimeEpoch: Integer;
     FtransPartiallyApproved: boolean;
     FtransType: string;
     Futi: string;
     FStatuses: string;
   public
     [MVCNameAs('amountCashback')]
-    property amountCashback: integer read FamountCashback write FamountCashback;
+    property amountCashback: Integer read FamountCashback write FamountCashback;
     [MVCNameAs('amountDiscount')]
-    property amountDiscount: integer read FamountDiscount write FamountDiscount;
+    property amountDiscount: Integer read FamountDiscount write FamountDiscount;
     [MVCNameAs('amountGratuity')]
-    property amountGratuity: integer read FamountGratuity write FamountGratuity;
+    property amountGratuity: Integer read FamountGratuity write FamountGratuity;
     [MVCNameAs('amountTrans')]
-    property amountTrans: integer read FamountTrans write FamountTrans;
+    property amountTrans: Integer read FamountTrans write FamountTrans;
     [MVCNameAs('cardPan')]
     property cardPan: string read FcardPan write FcardPan;
     [MVCNameAs('cardPanSequenceNumber')]
@@ -328,9 +328,9 @@ type
     [MVCNameAs('merchantReference')]
     property merchantReference: string read FmerchantReference write FmerchantReference;
     [MVCNameAs('penniesAmount')]
-    property penniesAmount: integer read FpenniesAmount write FpenniesAmount;
+    property penniesAmount: Integer read FpenniesAmount write FpenniesAmount;
     [MVCNameAs('receiptNumber')]
-    property receiptNumber: integer read FreceiptNumber write FreceiptNumber;
+    property receiptNumber: Integer read FreceiptNumber write FreceiptNumber;
     [MVCNameAs('softwareVersion')]
     property softwareVersion: string read FsoftwareVersion write FsoftwareVersion;
     [MVCNameAs('stan')]
@@ -344,7 +344,7 @@ type
     [MVCNameAs('transCurrencyCode')]
     property transCurrencyCode: string read FtransCurrencyCode write FtransCurrencyCode;
     [MVCNameAs('transDateTimeEpoch')]
-    property transDateTimeEpoch: integer read FtransDateTimeEpoch write FtransDateTimeEpoch;
+    property transDateTimeEpoch: Integer read FtransDateTimeEpoch write FtransDateTimeEpoch;
     [MVCNameAs('transPartiallyApproved')]
     property transPartiallyApproved: boolean read FtransPartiallyApproved write FtransPartiallyApproved;
     [MVCNameAs('transType')]
@@ -355,15 +355,15 @@ type
     property Statuses: string read FStatuses write FStatuses;
   end;
 
-// TReceipt = Array[1..100] of string;
+  // TReceipt = Array[1..100] of string;
 
   // respons to Get Transaction status. Its one long string.
   TFlatPAY_GetTransactionsRespons = class(TFlatPAY_Response)
   private
-    FamountCashback: integer;
-    FamountDiscount: integer;
-    FamountGratuity: integer;
-    FamountTrans: integer;
+    FamountCashback: Integer;
+    FamountDiscount: Integer;
+    FamountGratuity: Integer;
+    FamountTrans: Integer;
     FauthorisationCode: string;
     FcardExpiryDate: string;
     FcardPan: string;
@@ -383,8 +383,8 @@ type
     FmerchantReceipt: TArray<string>;
     FmerchantReference: string;
     FpaymentId: string;
-    FpenniesAmount: integer;
-    FreceiptNumber: integer;
+    FpenniesAmount: Integer;
+    FreceiptNumber: Integer;
     FresponseCode: string;
     FretrievalReferenceNumber: string;
     FsoftwareVersion: string;
@@ -399,13 +399,13 @@ type
     Futi: string;
   public
     [MVCNameAs('amountCashback')]
-    property amountCashback: integer read FamountCashback write FamountCashback;
+    property amountCashback: Integer read FamountCashback write FamountCashback;
     [MVCNameAs('amountDiscount')]
-    property amountDiscount: integer read FamountDiscount write FamountDiscount;
+    property amountDiscount: Integer read FamountDiscount write FamountDiscount;
     [MVCNameAs('amountGratuity')]
-    property amountGratuity: integer read FamountGratuity write FamountGratuity;
+    property amountGratuity: Integer read FamountGratuity write FamountGratuity;
     [MVCNameAs('amountTrans')]
-    property amountTrans: integer read FamountTrans write FamountTrans;
+    property amountTrans: Integer read FamountTrans write FamountTrans;
     [MVCNameAs('authorisationCode')]
     property authorisationCode: string read FauthorisationCode write FauthorisationCode;
     [MVCNameAs('cardExpiryDate')]
@@ -445,9 +445,9 @@ type
     [MVCNameAs('paymentId')]
     property paymentId: string read FpaymentId write FpaymentId;
     [MVCNameAs('penniesAmount')]
-    property penniesAmount: integer read FpenniesAmount write FpenniesAmount;
+    property penniesAmount: Integer read FpenniesAmount write FpenniesAmount;
     [MVCNameAs('receiptNumber')]
-    property receiptNumber: integer read FreceiptNumber write FreceiptNumber;
+    property receiptNumber: Integer read FreceiptNumber write FreceiptNumber;
     [MVCNameAs('responseCode')]
     property responseCode: string read FresponseCode write FresponseCode;
     [MVCNameAs('retrievalReferenceNumber')]
@@ -477,10 +477,10 @@ type
   // Display data which are returned as an array from GET Status
   TDisplayData = class
   private
-    FValue: integer;
+    FValue: Integer;
     FDescription: string;
   public
-    property value: integer read FValue write FValue;
+    property value: Integer read FValue write FValue;
     property description: string read FDescription write FDescription;
   end;
 
@@ -489,11 +489,11 @@ type
   private
     FStatuses: string;
     FDisplayData: TObjectList<TDisplayData>;
-    FCount: integer;
+    FCount: Integer;
   public
     property Statuses: string read FStatuses write FStatuses;
     property DisplayData: TObjectList<TDisplayData> read FDisplayData write FDisplayData;
-    property Count: integer read FCount write FCount;
+    property Count: Integer read FCount write FCount;
     constructor Create;
     destructor Destroy; Override;
   end;
@@ -537,7 +537,7 @@ type
     property uti: string read Futi write Futi;
   end;
 
-// Class that handle all communication with FlatPAY
+  // Class that handle all communication with FlatPAY
   TFlatPAYHTTP = class
   private
     FClient: TRestClient;
@@ -555,23 +555,23 @@ type
   TFlatPAY_PaymentRequest = class
   private
     FtransType: string; // [ SALE, REFUND, REVERSAL, PREAUTH, COMPLETION ]
-    FamountTrans: double;
-    FamountGratuity: double;
-    FamountCashback: double;
+    FamountTrans: Double;
+    FamountGratuity: Double;
+    FamountCashback: Double;
     FReference: string;
     FLanguage: string;
     Futi: string;
   public
-    constructor Create(aTransType: string; aAmount: double; aGratuity: double; aCashback: double; aReference: String; aLanguage: String; auti: String); overload;
+    constructor Create(aTransType: string; aAmount: Double; aGratuity: Double; aCashback: Double; aReference: String; aLanguage: String; auti: String); overload;
     destructor Destroy; override;
     [MVCNameAs('transType')]
     property transType: string read FtransType write FtransType;
     [MVCNameAs('amountTrans')]
-    property amountTrans: double read FamountTrans write FamountTrans;
+    property amountTrans: Double read FamountTrans write FamountTrans;
     [MVCNameAs('amountGratuity')]
-    property amountGratuity: double read FamountGratuity write FamountGratuity;
+    property amountGratuity: Double read FamountGratuity write FamountGratuity;
     [MVCNameAs('amountCashback')]
-    property amountCashback: double read FamountCashback write FamountCashback;
+    property amountCashback: Double read FamountCashback write FamountCashback;
     [MVCNameAs('reference')]
     property reference: string read FReference write FReference;
     [MVCNameAs('language')]
@@ -583,7 +583,7 @@ type
   // Class that holds all functions needed to use FlatPAY terminal
   TFlatPAY = class
   private
-    {private declarations}
+    { private declarations }
     procedure SetupTokenRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
     procedure SetupXReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
     procedure SetupZReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
@@ -593,7 +593,7 @@ type
     procedure SetupGetPaymentRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
     procedure SetupGetStatusRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
   Public
-    {public declarations}
+    { public declarations }
     function PairWithTerminal(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
     function GetXReport(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
     function GetZReport(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
@@ -608,13 +608,13 @@ type
   private
     { private declarations }
     FKindOfJob: string;
-    FTransType: String;
+    FtransType: String;
     FAmount: Double;
     FGratiuty: Double;
     FCashBack: Double;
     FReference: string;
     FLanguage: string;
-    FDisablePrint: Boolean;
+    FDisablePrint: boolean;
     Futi: string;
     FXReportName: String;
     FZReportName: string;
@@ -634,7 +634,7 @@ type
     [MVCNameAs('KindOfJob')]
     property KindOfJob: string read FKindOfJob write FKindOfJob;
     [MVCNameAs('TransType')]
-    property TransType: String read FTransType write FTransType;
+    property transType: String read FtransType write FtransType;
     [MVCNameAs('Amount')]
     property Amount: Double read FAmount write FAmount;
     [MVCNameAs('Gratiuty')]
@@ -642,11 +642,11 @@ type
     [MVCNameAs('CashBack')]
     property CashBack: Double read FCashBack write FCashBack;
     [MVCNameAs('Reference')]
-    property Reference: string read FReference write FReference;
+    property reference: string read FReference write FReference;
     [MVCNameAs('Language')]
-    property Language: string read FLanguage write FLanguage;
+    property language: string read FLanguage write FLanguage;
     [MVCNameAs('DisablePrint')]
-    property DisablePrint: Boolean read FDisablePrint write FDisablePrint;
+    property DisablePrint: boolean read FDisablePrint write FDisablePrint;
     [MVCNameAs('uti')]
     property uti: string read Futi write Futi;
     [MVCDoNotSerialize]
@@ -671,10 +671,6 @@ type
     [MVCDoNotSerialize]
     property ResultError: string read FResultError;
   end;
-
-
-
-
 
 implementation
 
@@ -762,7 +758,8 @@ var
   ajstr: string;
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmPOST, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&silent=false&disablePrinting=%s', [aFlatSetup.FStartTransactionApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.True)]);
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&silent=false&disablePrinting=%s', [aFlatSetup.FStartTransactionApi, aFlatSetup.Serial,
+    aFlatSetup.DisablePrint.ToString(TUseBoolStrs.True)]);
   ajstr := GetDefaultSerializer.SerializeObject(aFlatPAY_Payment);
   aFlatPAYHttp.Request.AddBody(ajstr, ctAPPLICATION_JSON);
 end;
@@ -776,13 +773,15 @@ end;
 procedure TFlatPAY.SetupXReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=XReport', [aFlatSetup.ReportsApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=XReport',
+    [aFlatSetup.ReportsApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.True)]);
 end;
 
 procedure TFlatPAY.SetupZReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=ZReport', [aFlatSetup.ReportsApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.true)]);
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&disablePrinting=%s&reportType=ZReport',
+    [aFlatSetup.ReportsApi, aFlatSetup.Serial, aFlatSetup.DisablePrint.ToString(TUseBoolStrs.True)]);
 end;
 
 function TFlatPAY.CancelPaymentRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
@@ -912,7 +911,7 @@ begin
           begin
             result := TRUE;
             aResponse := TFlatPAY_HistoryResponse.Create;
-            GetDefaultSerializer.DeserializeCollection(lFlatPAYHttp.Response.Content, (aResponse as TFlatPAY_HistoryResponse).FHistory , TFlatPAY_History);
+            GetDefaultSerializer.DeserializeCollection(lFlatPAYHttp.Response.Content, (aResponse as TFlatPAY_HistoryResponse).FHistory, TFlatPAY_History);
           end
       else
         begin
@@ -1098,7 +1097,7 @@ begin
   end;
 end;
 
-constructor TFlatPAY_PaymentRequest.Create(aTransType: string; aAmount, aGratuity, aCashback: double; aReference, aLanguage, auti: String);
+constructor TFlatPAY_PaymentRequest.Create(aTransType: string; aAmount, aGratuity, aCashback: Double; aReference, aLanguage, auti: String);
 begin
   FtransType := aTransType;
   FamountTrans := aAmount;
@@ -1114,13 +1113,12 @@ begin
   inherited;
 end;
 
-
 { TTFlatPAY_HistoryResponse }
 
 constructor TFlatPAY_HistoryResponse.Create;
 begin
   inherited;
-   FHistory := TObjectList<TFlatPAY_History>.Create;
+  FHistory := TObjectList<TFlatPAY_History>.Create;
 end;
 
 destructor TFlatPAY_HistoryResponse.Destroy;
@@ -1151,6 +1149,5 @@ begin
 
   inherited;
 end;
-
 
 end.

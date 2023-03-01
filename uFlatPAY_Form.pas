@@ -29,7 +29,7 @@ type
     procedure btnCancelTransactionClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
-    {Private declarations}
+    { Private declarations }
     fFlatPayThread: TThread;
     fFlatPay_Setup: TFlatPAYSetup;
     fFlatPay_Pay: TFlatPAY_PaymentRequest;
@@ -44,9 +44,10 @@ type
     function CancelFlatPAYPayment(out aModalResult: TModalResult): Boolean;
     function WaitForPaymentToBeStarted(var aFlatPAY: TFlatPAY; var aFlatPAY_Response: TFlatPAY_Response; aFlatPAY_Pay: TFlatPAY_PaymentRequest): Boolean;
   public
-    {Public declarations}
+    { Public declarations }
 
-    class function DoFlatPAYPayment(aFlatPaySetup: TFlatPAYSetup; aTransType: string; aAmount: Double; aGratuity: Double; aCashback: Double; aReference: string; aLanguage: string; aDisablePrint: Boolean; out auti: string;
+    class function DoFlatPAYPayment(aFlatPaySetup: TFlatPAYSetup; aTransType: string; aAmount: Double; aGratuity: Double; aCashback: Double; aReference: string; aLanguage: string;
+      aDisablePrint: Boolean; out auti: string;
       out aTransactionRespons: TFlatPAY_GetTransactionsRespons; aResizeMultiplier: integer = 10000): Boolean;
 
     procedure ShowFlatPAYErrorMessage(lFlatPAY_Response: TFlatPAY_Response);
@@ -59,10 +60,12 @@ implementation
 
 {$R *.dfm}
 
+
 uses
   RTTI;
 
-class function TfrmFlatPAY.DoFlatPAYPayment(aFlatPaySetup: TFlatPAYSetup; aTransType: string; aAmount: Double; aGratuity: Double; aCashback: Double; aReference: string; aLanguage: string; aDisablePrint: Boolean; out auti: string;
+class function TfrmFlatPAY.DoFlatPAYPayment(aFlatPaySetup: TFlatPAYSetup; aTransType: string; aAmount: Double; aGratuity: Double; aCashback: Double; aReference: string;
+  aLanguage: string; aDisablePrint: Boolean; out auti: string;
   out aTransactionRespons: TFlatPAY_GetTransactionsRespons; aResizeMultiplier: integer = 10000): Boolean;
 
   function CopyObject(const FromObj, ToObj: TObject): Boolean;
@@ -89,11 +92,11 @@ class function TfrmFlatPAY.DoFlatPAYPayment(aFlatPaySetup: TFlatPAYSetup; aTrans
   end;
 
 begin
-(*
-  This will setup the enitre payment.
-  It will create a thread, where the payment is started and the flow where it waits until it is done and shows messages to user is handled in the thread
-  A class with the repsonse from the transaction is created (global to this form). This will be returned to caller
-*)
+  (*
+    This will setup the enitre payment.
+    It will create a thread, where the payment is started and the flow where it waits until it is done and shows messages to user is handled in the thread
+    A class with the repsonse from the transaction is created (global to this form). This will be returned to caller
+  *)
 
   with TfrmFlatPAY.Create(nil) do
   begin
@@ -122,7 +125,7 @@ begin
       // Show iteself (this form)    HVAD FÅR DEN TIL AT STOPPE??
       top := (screen.Height DIV 2) - (Height DIV 2);
       left := (screen.Width DIV 2) - (Width DIV 2);
-//      lAmount.Caption := 'SH: '+screen.Height.ToString + ' SW: '+screen.Width.ToString +  'H: ' + Height.ToString + 'W: '+Width.ToString + 'H: ';
+      // lAmount.Caption := 'SH: '+screen.Height.ToString + ' SW: '+screen.Width.ToString +  'H: ' + Height.ToString + 'W: '+Width.ToString + 'H: ';
       Result := ShowModal = mrOK;
       try
         // Always return Unique Transaction ID. With this we can later ask on this specific transaction
@@ -130,7 +133,7 @@ begin
         auti := futi;
 
         // Copy class to result to  be returned.
-// aTransactionRespons.cardType := fReturnRespons.cardType;
+        // aTransactionRespons.cardType := fReturnRespons.cardType;
         CopyObject(fReturnRespons, aTransactionRespons);
         // Free class
         fReturnRespons.Free;
@@ -216,7 +219,7 @@ begin
       fResult := mrCancel;
       RePaint;
       // Will clsoe the form itself
-// ModalResult := fResult;
+      // ModalResult := fResult;
       exit;
     end;
 
@@ -259,11 +262,11 @@ begin
 
         end;
         // Transaction is now finishe
-          if Assigned(lFlatPAY_Response) then
-            FreeAndNil(lFlatPAY_Response);
+        if Assigned(lFlatPAY_Response) then
+          FreeAndNil(lFlatPAY_Response);
 
         // Do Get Transaction
-        UntilNotEmptyResponse := FALSE;
+        UntilNotEmptyResponse := False;
         repeat
           if (aFlatPAY.GetPaymentRequest(fFlatPay_Setup, lFlatPAY_Response)) then
           begin
@@ -293,10 +296,10 @@ begin
             else if (luti <> futi) then
             begin
               (*
-                  HER ER MÅSKE ET ISSUE OMKRING AFVISTE KALD.
+                HER ER MÅSKE ET ISSUE OMKRING AFVISTE KALD.
 
-                  KONTROLLER
-*)
+                KONTROLLER
+              *)
               FreeAndNil(lFlatPAY_Response);
               UpdateTextToShowClerk('Answer not ready yet. Try again.');
               UntilNotEmptyResponse := False;
@@ -318,7 +321,7 @@ begin
           end
           else
           begin
-          // Should always be a success.
+            // Should always be a success.
             fResult := mrCancel;
             ShowFlatPAYErrorMessage(lFlatPAY_Response);
           end;

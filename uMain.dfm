@@ -76,8 +76,6 @@ object frmMain: TfrmMain
       ReadOnly = True
       ScrollBars = ssBoth
       TabOrder = 0
-      ExplicitWidth = 733
-      ExplicitHeight = 759
     end
   end
   object TrayIcon1: TTrayIcon
