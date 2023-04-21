@@ -111,4 +111,10 @@ object frmMain: TfrmMain
     Left = 488
     Top = 384
   end
+  object tiCancel: TTimer
+    Interval = 100
+    OnTimer = tiCancelTimer
+    Left = 569
+    Top = 384
+  end
 end

@@ -36,6 +36,7 @@ type
     btnXReport: TButton;
     tiJob: TTimer;
     Vis1: TMenuItem;
+    tiCancel: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure TrayIcon1DblClick(Sender: TObject);
@@ -46,6 +47,7 @@ type
     procedure btnXReportClick(Sender: TObject);
     procedure tiJobTimer(Sender: TObject);
     procedure Vis1Click(Sender: TObject);
+    procedure tiCancelTimer(Sender: TObject);
   private
     { Private declarations }
   public
@@ -83,6 +85,7 @@ type
     FToken: string;
     FDisablePrint: Boolean;
     FIncomingJobFile: string;
+    function ReadJobFiles(var AFileStr: string): Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -101,7 +104,7 @@ type
     procedure AddLog(aText: String);
     procedure CreateSubFolders;
     procedure LookForAJob;
-
+    procedure LookCanceljob;
     property FlatPAYSetup: TFlatPAYSetup read FFlatPAYSetup write FFlatPAYSetup;
     property FlatPAYAction: TFlatPAYAction read FFlatPAYAction write FFlatPAYAction;
     property RetrunAnswer: TFlatPAYReturnAnswer read FReturnAnswer write FReturnAnswer;
@@ -186,6 +189,7 @@ begin
 {$ENDIF}
   mmoLog.Clear;
   tiJob.Enabled := FALSE;
+  tiCancel.Enabled := FALSE;
   tiAutoHide.Enabled := TRUE;
 end;
 
@@ -197,6 +201,12 @@ begin
 {$IFDEF RELEASE}
   self.Hide;
 {$ENDIF}
+end;
+procedure TfrmMain.tiCancelTimer(Sender: TObject);
+begin
+  tiCancel.Enabled := FALSE;
+  MyFlatPAYComminucation.LookCanceljob;
+  tiCancel.Enabled := TRUE;
 end;
 
 procedure TfrmMain.tiJobTimer(Sender: TObject);
@@ -318,7 +328,7 @@ begin
   lReturnTransactionsResponse := TFlatPAY_GetTransactionsRespons.Create;
 
   // Do sale/return.
-  if frmFlatPAY.DoFlatPAYPayment(FlatPAYSetup, aFlatPAY_Action.TransType, aFlatPAY_Action.Amount, aFlatPAY_Action.Gratiuty, aFlatPAY_Action.CashBack, aFlatPAY_Action.Reference,
+  if TfrmFlatPAY.DoFlatPAYPayment(FlatPAYSetup, aFlatPAY_Action.TransType, aFlatPAY_Action.Amount, aFlatPAY_Action.Gratiuty, aFlatPAY_Action.CashBack, aFlatPAY_Action.Reference,
     aFlatPAY_Action.Language, aFlatPAY_Action.DisablePrint, luti, lReturnTransactionsResponse,
     20000) then
   begin
@@ -404,15 +414,35 @@ begin
   TFile.WriteAllText((FOutgoingResultFolder + aFileName), aContent, TEncoding.UTF8);
 end;
 
+procedure TMyFlatPAYCommunication.LookCanceljob;
+var
+  lMyFileStr: string;
+  LCancelFlatPayAction: TFlatPAYAction;
+begin
+  if (not FIncomingJobFolder.IsEmpty) and (FileExists(FIncomingJobFolder + FIncomingJobFile)) then
+  begin
+    if not ReadJobFiles(lMyFileStr) then
+      Exit;  
+
+    LCancelFlatPayAction := TFlatPAYAction.Create;
+    try
+      GetDefaultSerializer.DeserializeObject(lMyFileStr, LCancelFlatPayAction);
+
+      if (AnsiUpperCase(LCancelFlatPayAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.CancelTransaction)) then
+      begin
+        AddLog(Format('JOB: %s', [FlatPAYAction.CancelTransaction]));
+        if Assigned(frmFlatPAY) and frmFlatPAY.btnCancelTransaction.Enabled then      
+          frmFlatPAY.btnCancelTransaction.Click;
+      end;
+    finally
+      LCancelFlatPayAction.Free;
+    end;
+  end;
+end;
+
 procedure TMyFlatPAYCommunication.LookForAJob;
 var
   lMyFileStr: string;
-  lFromFile: string;
-  lToFile: string;
-  lFileMoved: Boolean;
-  lMoveCounter: Integer;
-  JobFileIsRead: Boolean;
-  lFileReadCounter: Integer;
 begin
   // This will look for a job file. It will then read this, deserialize it and do what it should.
   if (FIncomingJobFolder <> '') then
@@ -421,62 +451,9 @@ begin
     begin
       // Make sure log folders with dates exist
       CreateSubFolders;
-
-      // Need to be sure, handle has been release;
-      // Read content of job file
-      JobFileIsRead := FALSE;
-      lFileReadCounter := 0;
-      // Will try 3 times to ensure, taht handle from EasyPOS Salg has been released and file can be read.
-      repeat
-        try
-          sleep(250);
-          lMyFileStr := TFile.ReadAllText((FIncomingJobFolder + FIncomingJobFile), TEncoding.UTF8);
-          JobFileIsRead := TRUE;
-          AddLog('Job læst');
-        except
-          AddLog(Format('Forsøger at læse job %d', [lFileReadCounter]));
-          JobFileIsRead := FALSE;
-          INC(lFileReadCounter);
-          sleep(250);
-        end;
-      until JobFileIsRead or (lFileReadCounter > 6);
-      if (lFileReadCounter > 6) then
-      begin
-        AddLog('FlatPAY Service kan ikke læse jobebt.');
-        AddLog('Afbryder');
+      if not ReadJobFiles(lMyFileStr) then
         Exit;
-      end;
-      // Set up from and to file
-      lFromFile := (FIncomingJobFolder + FIncomingJobFile);
-      lToFile := (FLogFolderIncomingJobs + 'Job_' + FormatDateTime('yyyymmdd_hhmmss', NOW) + '.txt');
-
-      // Move job file
-      lFileMoved := FALSE;
-      lMoveCounter := 0;
-      repeat
-        AddLog(Format('Forsøger at læse job %d', [lFileReadCounter]));
-        if (NOT(MoveFile(PWideChar(lFromFile), PWideChar(lToFile)))) then
-        begin
-          INC(lMoveCounter);
-          AddLog(Format('Forsøger at flyttejob %d', [lMoveCounter]));
-          if (lMoveCounter > 3) then
-            AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile)
-          else
-            sleep(500);
-        end
-        else
-        begin
-          AddLog('Job fil flyttet');
-          lFileMoved := TRUE;
-        end;
-      until lFileMoved or (lMoveCounter > 3);
-      if (lMoveCounter > 3) then
-      begin
-        AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile);
-        AddLog('Afbryder');
-        Exit;
-      end;
-
+      
       // Create whats needed to communicate with FlatPAY
       FlatPAYAction := TFlatPAYAction.Create;
       try
@@ -513,7 +490,9 @@ begin
         else if (AnsiUpperCase(FlatPAYAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.PaymentName)) then
         begin
           AddLog(Format('JOB: %s', [FlatPAYAction.PaymentName]));
+          frmMain.tiCancel.Enabled := TRUE;
           DoPayment(FALSE, FlatPAYAction);
+          frmMain.tiCancel.Enabled := TRUE;
         end;
       finally
         FlatPAYAction.Free;
@@ -574,6 +553,69 @@ begin
   begin
     ShowMessage('Kan ikke skabe forbindelse til terminal.'#13#10'Indstillinger er ikke opsat');
     FConnected := FALSE;
+  end;
+end;
+function TMyFlatPAYCommunication.ReadJobFiles(var AFileStr: string): Boolean;
+var
+  lFromFile: string;
+  lToFile: string;
+  lFileMoved: Boolean;
+  lMoveCounter: Integer;
+  JobFileIsRead: Boolean;
+  lFileReadCounter: Integer;
+begin
+  Result := True;
+  // Need to be sure, handle has been release;
+  // Read content of job file
+  lFileReadCounter := 0;
+  // Will try 3 times to ensure, taht handle from EasyPOS Salg has been released and file can be read.
+  repeat
+    try
+      sleep(250);
+      AFileStr := TFile.ReadAllText((FIncomingJobFolder + FIncomingJobFile), TEncoding.UTF8);
+      JobFileIsRead := TRUE;
+      AddLog('Job læst');
+    except
+      AddLog(Format('Forsøger at læse job %d', [lFileReadCounter]));
+      JobFileIsRead := FALSE;
+      INC(lFileReadCounter);
+      sleep(250);
+    end;
+  until JobFileIsRead or (lFileReadCounter > 6);
+  if (lFileReadCounter > 6) then
+  begin
+    AddLog('FlatPAY Service kan ikke læse jobebt.');
+    AddLog('Afbryder');
+    Exit(False);
+  end;
+  // Set up from and to file
+  lFromFile := (FIncomingJobFolder + FIncomingJobFile);
+  lToFile := (FLogFolderIncomingJobs + 'Job_' + FormatDateTime('yyyymmdd_hhmmss', NOW) + '.txt');
+  // Move job file
+  lFileMoved := FALSE;
+  lMoveCounter := 0;
+  repeat
+    AddLog(Format('Forsøger at læse job %d', [lFileReadCounter]));
+    if (NOT(MoveFile(PWideChar(lFromFile), PWideChar(lToFile)))) then
+    begin
+      INC(lMoveCounter);
+      AddLog(Format('Forsøger at flyttejob %d', [lMoveCounter]));
+      if (lMoveCounter > 3) then
+        AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile)
+      else
+        sleep(500);
+    end
+    else
+    begin
+      AddLog('Job fil flyttet');
+      lFileMoved := TRUE;
+    end;
+  until lFileMoved or (lMoveCounter > 3);
+  if (lMoveCounter > 3) then
+  begin
+    AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile);
+    AddLog('Afbryder');
+    Exit(False);
   end;
 end;
 
