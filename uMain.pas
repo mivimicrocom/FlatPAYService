@@ -492,7 +492,7 @@ begin
           AddLog(Format('JOB: %s', [FlatPAYAction.PaymentName]));
           frmMain.tiCancel.Enabled := TRUE;
           DoPayment(FALSE, FlatPAYAction);
-          frmMain.tiCancel.Enabled := TRUE;
+          frmMain.tiCancel.Enabled := FALSE;
         end;
       finally
         FlatPAYAction.Free;
