@@ -98,57 +98,61 @@ begin
     A class with the repsonse from the transaction is created (global to this form). This will be returned to caller
   *)
 
-  with TfrmFlatPAY.Create(nil) do
-  begin
-    try
-      aFlatPaySetup.DisablePrint := aDisablePrint;
-      UpdateTextToShowClerk('Overfører beløb...vent...');
-      // Button to cancel will be enabled when the transation is started.
-      btnCancelTransaction.Enabled := False;
-      // Scaler formen
-      ScaleBy(aResizeMultiplier, 10000);
-      // Set default values
-      aFlatPaySetup.uti := '';
-      futi := '';
-      // Create class to hold respons, to give to caller
-      fReturnRespons := TFlatPAY_GetTransactionsRespons.Create;
-      fResult := mrNone; // 0 = mrNone
-      // Set setupclass
-      fFlatPay_Setup := aFlatPaySetup;
-
-      // Do create payment. Payment not started yet, just created
-      fFlatPay_Pay := TFlatPAY_PaymentRequest.Create(aTransType, aAmount, aGratuity, aCashback, aReference, aLanguage, auti);
-      // Display type and amount
-      lAmount.Caption := aTransType + ' ' + FormatCurr('0.00', (aAmount / 100));
-      // Starting background thread to hancle FlatPAY payment and all needed to handled messages and flow in genera.
-      CallFlatPAYAndStartPayment;
-      // Show iteself (this form)    HVAD FÅR DEN TIL AT STOPPE??
-      top := (screen.Height DIV 2) - (Height DIV 2);
-      left := (screen.Width DIV 2) - (Width DIV 2);
-      // lAmount.Caption := 'SH: '+screen.Height.ToString + ' SW: '+screen.Width.ToString +  'H: ' + Height.ToString + 'W: '+Width.ToString + 'H: ';
-      Result := ShowModal = mrOK;
+  frmFlatPAY := TfrmFlatPAY.Create(nil);
+  try
+    with frmFlatPAY do
+    begin
       try
-        // Always return Unique Transaction ID. With this we can later ask on this specific transaction
-        // Behøves egentlig ikke, da det er i classen, der returneres.
-        auti := futi;
+        aFlatPaySetup.DisablePrint := aDisablePrint;
+        UpdateTextToShowClerk('Overfører beløb...vent...');
+        // Button to cancel will be enabled when the transation is started.
+        btnCancelTransaction.Enabled := False;
+        // Scaler formen
+        ScaleBy(aResizeMultiplier, 10000);
+        // Set default values
+        aFlatPaySetup.uti := '';
+        futi := '';
+        // Create class to hold respons, to give to caller
+        fReturnRespons := TFlatPAY_GetTransactionsRespons.Create;
+        fResult := mrNone; // 0 = mrNone
+        // Set setupclass
+        fFlatPay_Setup := aFlatPaySetup;
 
-        // Copy class to result to  be returned.
-        // aTransactionRespons.cardType := fReturnRespons.cardType;
-        CopyObject(fReturnRespons, aTransactionRespons);
-        // Free class
-        fReturnRespons.Free;
+        // Do create payment. Payment not started yet, just created
+        fFlatPay_Pay := TFlatPAY_PaymentRequest.Create(aTransType, aAmount, aGratuity, aCashback, aReference, aLanguage, auti);
+        // Display type and amount
+        lAmount.Caption := aTransType + ' ' + FormatCurr('0.00', (aAmount / 100));
+        // Starting background thread to hancle FlatPAY payment and all needed to handled messages and flow in genera.
+        CallFlatPAYAndStartPayment;
+        // Show iteself (this form)    HVAD FÅR DEN TIL AT STOPPE??
+        top := (screen.Height DIV 2) - (Height DIV 2);
+        left := (screen.Width DIV 2) - (Width DIV 2);
+        // lAmount.Caption := 'SH: '+screen.Height.ToString + ' SW: '+screen.Width.ToString +  'H: ' + Height.ToString + 'W: '+Width.ToString + 'H: ';
+        Result := ShowModal = mrOK;
+        try
+          // Always return Unique Transaction ID. With this we can later ask on this specific transaction
+          // Behøves egentlig ikke, da det er i classen, der returneres.
+          auti := futi;
 
-        // Thread started - wait for it to end (ensure it will end).
-        // Fordi jeg kan afslutte med ALT+F4
-        fFlatPayThread.WaitFor;
+          // Copy class to result to  be returned.
+          // aTransactionRespons.cardType := fReturnRespons.cardType;
+          CopyObject(fReturnRespons, aTransactionRespons);
+          // Free class
+          fReturnRespons.Free;
 
-      except
-        ;
+          // Thread started - wait for it to end (ensure it will end).
+          // Fordi jeg kan afslutte med ALT+F4
+          fFlatPayThread.WaitFor;
+
+        except
+          ;
+        end;
+      finally
+        fFlatPay.Free;
       end;
-    finally
-      fFlatPay.Free;
-      Free;
     end;
+  finally
+    frmFlatPAY.Free;
   end;
 end;
 

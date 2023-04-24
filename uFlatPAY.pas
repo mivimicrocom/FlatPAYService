@@ -620,6 +620,7 @@ type
     FZReportName: string;
     FHistoryName: string;
     FLastTransactionName: string;
+    FCancelTransaction: string;
     FGetStatusName: string;
     FPaymentName: string;
     FMerchantReceiptName: string;
@@ -657,6 +658,8 @@ type
     property HistoryName: string read FHistoryName;
     [MVCDoNotSerialize]
     property LastTransactionName: string read FLastTransactionName;
+    [MVCDoNotSerialize]
+    property CancelTransaction: string read FCancelTransaction;
     [MVCDoNotSerialize]
     property GetStatusName: string read FGetStatusName write FGetStatusName;
     [MVCDoNotSerialize]
@@ -1135,6 +1138,7 @@ begin
   FZReportName := 'z-report.json';
   FHistoryName := 'history.json';
   FLastTransactionName := 'last-transaction.json';
+  FCancelTransaction := 'cancel-transaction.json';
   FGetStatusName := 'get-status.json';
   FPaymentName := 'payment.json';
   FMerchantReceiptName := 'merchant-receipt.txt';
