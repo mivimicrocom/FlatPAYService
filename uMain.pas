@@ -202,6 +202,7 @@ begin
   self.Hide;
 {$ENDIF}
 end;
+
 procedure TfrmMain.tiCancelTimer(Sender: TObject);
 begin
   tiCancel.Enabled := FALSE;
@@ -422,7 +423,7 @@ begin
   if (not FIncomingJobFolder.IsEmpty) and (FileExists(FIncomingJobFolder + FIncomingJobFile)) then
   begin
     if not ReadJobFiles(lMyFileStr) then
-      Exit;  
+      Exit;
 
     LCancelFlatPayAction := TFlatPAYAction.Create;
     try
@@ -431,7 +432,7 @@ begin
       if (AnsiUpperCase(LCancelFlatPayAction.KindOfJob) = AnsiUpperCase(FlatPAYAction.CancelTransaction)) then
       begin
         AddLog(Format('JOB: %s', [FlatPAYAction.CancelTransaction]));
-        if Assigned(frmFlatPAY) and frmFlatPAY.btnCancelTransaction.Enabled then      
+        if Assigned(frmFlatPAY) and frmFlatPAY.btnCancelTransaction.Enabled then
           frmFlatPAY.btnCancelTransaction.Click;
       end;
     finally
@@ -453,7 +454,7 @@ begin
       CreateSubFolders;
       if not ReadJobFiles(lMyFileStr) then
         Exit;
-      
+
       // Create whats needed to communicate with FlatPAY
       FlatPAYAction := TFlatPAYAction.Create;
       try
@@ -555,6 +556,7 @@ begin
     FConnected := FALSE;
   end;
 end;
+
 function TMyFlatPAYCommunication.ReadJobFiles(var AFileStr: string): Boolean;
 var
   lFromFile: string;
@@ -564,7 +566,7 @@ var
   JobFileIsRead: Boolean;
   lFileReadCounter: Integer;
 begin
-  Result := True;
+  Result := TRUE;
   // Need to be sure, handle has been release;
   // Read content of job file
   lFileReadCounter := 0;
@@ -586,7 +588,7 @@ begin
   begin
     AddLog('FlatPAY Service kan ikke læse jobebt.');
     AddLog('Afbryder');
-    Exit(False);
+    Exit(FALSE);
   end;
   // Set up from and to file
   lFromFile := (FIncomingJobFolder + FIncomingJobFile);
@@ -615,7 +617,7 @@ begin
   begin
     AddLog('Kan ikke flytte fil ' + lFromFile + ' til ' + lToFile);
     AddLog('Afbryder');
-    Exit(False);
+    Exit(FALSE);
   end;
 end;
 
