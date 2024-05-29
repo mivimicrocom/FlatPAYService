@@ -329,8 +329,16 @@ begin
   lReturnTransactionsResponse := TFlatPAY_GetTransactionsRespons.Create;
 
   // Do sale/return.
-  if TfrmFlatPAY.DoFlatPAYPayment(FlatPAYSetup, aFlatPAY_Action.TransType, aFlatPAY_Action.Amount, aFlatPAY_Action.Gratiuty, aFlatPAY_Action.CashBack, aFlatPAY_Action.Reference,
-    aFlatPAY_Action.Language, aFlatPAY_Action.DisablePrint, luti, lReturnTransactionsResponse,
+  if TfrmFlatPAY.DoFlatPAYPayment(FlatPAYSetup,
+    aFlatPAY_Action.TransType,
+    aFlatPAY_Action.Amount,
+    aFlatPAY_Action.Gratiuty,
+    aFlatPAY_Action.CashBack,
+    aFlatPAY_Action.Reference,
+    aFlatPAY_Action.Language,
+    aFlatPAY_Action.DisablePrint,
+    luti,
+    lReturnTransactionsResponse,
     20000) then
   begin
     // Accepted

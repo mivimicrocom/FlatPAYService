@@ -25,7 +25,6 @@ object frmMain: TfrmMain
     Caption = 'pnlButtons'
     ShowCaption = False
     TabOrder = 0
-    ExplicitHeight = 761
     object btnSettings: TButton
       Left = 24
       Top = 24
@@ -63,8 +62,6 @@ object frmMain: TfrmMain
     Caption = 'pnlLog'
     ShowCaption = False
     TabOrder = 1
-    ExplicitWidth = 735
-    ExplicitHeight = 761
     object mmoLog: TMemo
       Left = 1
       Top = 1

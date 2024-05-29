@@ -1,7 +1,7 @@
 program FlatPAYService;
 
 uses
-  FastMM4,
+//  FastMM4,
   Vcl.Forms,
   uMain in 'uMain.pas' {frmMain},
   uSettings in 'uSettings.pas' {frmSettings},

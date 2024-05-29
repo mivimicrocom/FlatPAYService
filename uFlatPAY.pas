@@ -747,7 +747,9 @@ end;
 procedure TFlatPAY.SetupGetStatusRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.Serial]);
+//  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.Serial]);
+  //Added:   uti as query parameter. According to swagger 29-05-2024
+  aFlatPAYHttp.Request.Resource := Format('%s?uti=%s&tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.uti, aFlatSetup.Serial]);
 end;
 
 procedure TFlatPAY.SetupHistoryReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
