@@ -20,39 +20,9 @@ uses
   MVCFramework,
   MVCFramework.Serializer.Defaults,
   MVCFramework.Serializer.Commons,
-  MVCFramework.Serializer.JsonDataObjects;
+  MVCFramework.Serializer.JsonDataObjects, Data.Bind.Components, Data.Bind.ObjectScope, REST.Client;
 
 type
-  TfrmMain = class(TForm)
-    TrayIcon1: TTrayIcon;
-    pnlButtons: TPanel;
-    Panel1: TPanel;
-    mmoLog: TMemo;
-    btnSettings: TButton;
-    PopupMenu1: TPopupMenu;
-    Afslut1: TMenuItem;
-    btnPairTerminal: TButton;
-    tiAutoHide: TTimer;
-    btnXReport: TButton;
-    tiJob: TTimer;
-    Vis1: TMenuItem;
-    tiCancel: TTimer;
-    procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure TrayIcon1DblClick(Sender: TObject);
-    procedure Afslut1Click(Sender: TObject);
-    procedure tiAutoHideTimer(Sender: TObject);
-    procedure btnSettingsClick(Sender: TObject);
-    procedure btnPairTerminalClick(Sender: TObject);
-    procedure btnXReportClick(Sender: TObject);
-    procedure tiJobTimer(Sender: TObject);
-    procedure Vis1Click(Sender: TObject);
-    procedure tiCancelTimer(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
-  end;
 
   TFlatPAYReturnAnswer = class
   private
@@ -123,6 +93,39 @@ type
     property IncomingJobFile: string read FIncomingJobFile write FIncomingJobFile;
   end;
 
+  TfrmMain = class(TForm)
+    TrayIcon1: TTrayIcon;
+    pnlButtons: TPanel;
+    Panel1: TPanel;
+    mmoLog: TMemo;
+    btnSettings: TButton;
+    PopupMenu1: TPopupMenu;
+    Afslut1: TMenuItem;
+    btnPairTerminal: TButton;
+    tiAutoHide: TTimer;
+    btnXReport: TButton;
+    tiJob: TTimer;
+    Vis1: TMenuItem;
+    tiCancel: TTimer;
+    RESTRequest1: TRESTRequest;
+    procedure FormCreate(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure TrayIcon1DblClick(Sender: TObject);
+    procedure Afslut1Click(Sender: TObject);
+    procedure tiAutoHideTimer(Sender: TObject);
+    procedure btnSettingsClick(Sender: TObject);
+    procedure btnPairTerminalClick(Sender: TObject);
+    procedure btnXReportClick(Sender: TObject);
+    procedure tiJobTimer(Sender: TObject);
+    procedure Vis1Click(Sender: TObject);
+    procedure tiCancelTimer(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    MyFlatPAYComminucation: TMyFlatPAYCommunication;
+  end;
+
 var
   frmMain: TfrmMain;
 
@@ -139,7 +142,7 @@ uses
 
 var
   DoEndProgram: Boolean = FALSE;
-  MyFlatPAYComminucation: TMyFlatPAYCommunication;
+//  MyFlatPAYComminucation: TMyFlatPAYCommunication;
 
 procedure TfrmMain.Afslut1Click(Sender: TObject);
 begin
@@ -339,7 +342,8 @@ begin
     aFlatPAY_Action.DisablePrint,
     luti,
     lReturnTransactionsResponse,
-    20000) then
+    20000,
+    TRUE) then
   begin
     // Accepted
     AddLog(Format(' Sale accepted (uti: %s, %s;  cardType: %s)', [luti, lReturnTransactionsResponse.uti, lReturnTransactionsResponse.cardType]));

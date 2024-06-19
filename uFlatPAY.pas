@@ -601,7 +601,7 @@ type
     function StartPaymentRequest(aFlatPAYSetup: TFlatPAYSetup; aFlatPAY_Payment: TFlatPAY_PaymentRequest; out aResponse: TFlatPAY_Response): boolean;
     function CancelPaymentRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
     function GetPaymentRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
-    function GetStatusRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
+    function GetStatusRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response; aLogCall: boolean = FALSE): boolean;
   end;
 
   TFlatPAYAction = class
@@ -677,6 +677,9 @@ type
 
 implementation
 
+uses
+  uMain;
+
 constructor TFlatPAY_StatusRequestResponse.Create;
 begin
   FDisplayData := TObjectList<TDisplayData>.Create(TRUE);
@@ -747,9 +750,9 @@ end;
 procedure TFlatPAY.SetupGetStatusRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmGET, TRUE);
-//  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.Serial]);
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.Serial]);
   //Added:   uti as query parameter. According to swagger 29-05-2024
-  aFlatPAYHttp.Request.Resource := Format('%s?uti=%s&tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.uti, aFlatSetup.Serial]);
+//  aFlatPAYHttp.Request.Resource := Format('%s?uti=%s&tid=%s', [aFlatSetup.FStatusRequestApi, aFlatSetup.uti, aFlatSetup.Serial]);
 end;
 
 procedure TFlatPAY.SetupHistoryReportRequest(aFlatSetup: TFlatPAYSetup; var aFlatPAYHttp: TFlatPAYHTTP);
@@ -763,7 +766,9 @@ var
   ajstr: string;
 begin
   aFlatPAYHttp := TFlatPAYHTTP.Create(aFlatSetup, rmPOST, TRUE);
-  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&silent=false&disablePrinting=%s', [aFlatSetup.FStartTransactionApi, aFlatSetup.Serial,
+  aFlatPAYHttp.Request.Resource := Format('%s?tid=%s&silent=false&disablePrinting=%s', [
+    aFlatSetup.FStartTransactionApi,
+    aFlatSetup.Serial,
     aFlatSetup.DisablePrint.ToString(TUseBoolStrs.True)]);
   ajstr := GetDefaultSerializer.SerializeObject(aFlatPAY_Payment);
   aFlatPAYHttp.Request.AddBody(ajstr, ctAPPLICATION_JSON);
@@ -865,7 +870,7 @@ begin
   end;
 end;
 
-function TFlatPAY.GetStatusRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response): boolean;
+function TFlatPAY.GetStatusRequest(aFlatPAYSetup: TFlatPAYSetup; out aResponse: TFlatPAY_Response; aLogCall: boolean = FALSE): boolean;
 var
   lFlatPAYHttp: TFlatPAYHTTP;
 begin
@@ -1034,6 +1039,15 @@ begin
       lFlatPAYHttp.Request.Execute;
       case lFlatPAYHttp.Response.StatusCode of
         200, 201:
+          begin
+            result := TRUE;
+
+            aResponse := TFlatPAY_StartTransactionRepsons.Create;
+            GetDefaultSerializer.DeserializeObject(lFlatPAYHttp.Response.Content, aResponse);
+            aFlatPAYSetup.uti := (aResponse as TFlatPAY_StartTransactionRepsons).uti;
+            result := (aResponse as TFlatPAY_StartTransactionRepsons).uti <> '';
+          end;
+        206: //Transaction in progress
           begin
             result := TRUE;
 

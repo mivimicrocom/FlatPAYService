@@ -114,4 +114,10 @@ object frmMain: TfrmMain
     Left = 569
     Top = 384
   end
+  object RESTRequest1: TRESTRequest
+    Params = <>
+    SynchronizedEvents = False
+    Left = 424
+    Top = 224
+  end
 end
